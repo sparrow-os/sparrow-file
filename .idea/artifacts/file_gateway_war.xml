@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="file-gateway-${sparrow_e_file_version}.war">
+    <root id="archive" name="file-gateway-1.0.0-SNAPSHOT.war">
       <element id="artifact" artifact-name="file-gateway:war exploded" />
     </root>
   </artifact>

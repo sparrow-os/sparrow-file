@@ -10,16 +10,59 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>file-gateway</artifactId>
-    <packaging>war</packaging>
-    <version>${sparrow_e_file_version}</version>
+    <packaging>jar</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <properties>
+        <druid.version>1.1.10</druid.version>
+    </properties>
     <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+        <!-- thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>2.3.2.RELEASE</version>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jstl</groupId>
             <artifactId>jstl</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sparrow</groupId>
@@ -41,14 +84,11 @@
             <groupId>com.sparrow</groupId>
             <artifactId>sparrow-loader</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sparrow</groupId>
-            <artifactId>sparrow-jedis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sparrow</groupId>
-            <artifactId>sparrow-mvc</artifactId>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.sparrow</groupId>-->
+        <!--            <artifactId>sparrow-jedis</artifactId>-->
+        <!--        </dependency>-->
+
         <dependency>
             <groupId>com.sparrow</groupId>
             <artifactId>sparrow-protocol</artifactId>
@@ -57,10 +97,15 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+
     </dependencies>
     <build>
         <filters>
-            <filter>src/main/configs/${env}.properties</filter>
+            <!--            <filter>src/main/configs/${env}.properties</filter>-->
         </filters>
         <resources>
             <resource>
@@ -76,13 +121,6 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <configuration>
-                    <port>9999</port>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

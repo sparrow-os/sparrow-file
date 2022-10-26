@@ -1,25 +1,21 @@
-<%@ page pageEncoding="UTF-8" %>
-<%@taglib uri="http://www.sparrowzoo.com/ui" prefix="j" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>upload demo-${website_name}</title>
+    <title>upload demo-</title>
     <meta http-equiv="pragma" content="no-cache"/>
     <meta http-equiv="cache-control" content="no-cache"/>
     <meta http-equiv="expires" content="0"/>
-    <j:style href="$resource/styles/sparrow.css"/>
-    <j:script src="$resource/scripts/require.js"/>
-    <j:style href="$resource/styles/pure-css/pure.css"/>
+    <link rel="stylesheet" type="text/css"  href="http://r.sparrowzoo.net/styles/sparrow.css?v=1.0"/>
+    <script language="javascript" type="text/javascript"  src="http://r.sparrowzoo.net/scripts/require.js?v=1.0"></script>
+    <link rel="stylesheet" type="text/css"  href="http://r.sparrowzoo.net/styles/pure-css/pure.css?v=1.0"/>
     <!--[if lte IE 8]>
-    <j:style href="$resource/styles/layouts-old-ie.css"/>
+    <link rel="stylesheet" type="text/css"  href="http://r.sparrowzoo.net/styles/layouts-old-ie.css?v=1.0"/>
     <![endif]-->
     <script type="text/javascript">
 
         requirejs.config({
-            baseUrl: "${resource}/scripts",
+            baseUrl: "http://r.sparrowzoo.net/scripts",
             paths: {
-                menu: '${resource}/scripts/system/menu'
+                menu: 'http://r.sparrowzoo.net/scripts/system/menu'
             }
         });
         require(['sparrow', 'domReady!'], function ($, dom) {
@@ -45,7 +41,7 @@
 <body>
 
 
-resource :${resource}
+resource :http://r.sparrowzoo.net
 <H2>forum</H2>
 <iframe id="null.resource" class="file-frame" frameborder="0"
         src=""></iframe>
