@@ -114,6 +114,7 @@
                     <include>*.xml</include>
                     <include>*.properties</include>
                     <include>thumbnail/**/**</include>
+                    <include>templates/**/**</include>
                     <include>META-INF/</include>
                 </includes>
                 <filtering>true</filtering>
