@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.sparrow</groupId>
+        <artifactId>sparrow-integration-bom</artifactId>
+        <version>1.0</version>
+    </parent>
+    <modules>
+        <module>file-api</module>
+        <module>file-sparrow-dao</module>
+        <module>file-dao-api</module>
+        <module>file-service</module>
+        <module>file-test</module>
+        <module>file-protocol</module>
+        <module>file-gateway</module>
+    </modules>
+
+    <artifactId>sparrow-file</artifactId>
+    <version>${sparrow_e_file_version}</version>
+    <packaging>pom</packaging>
+    <name>sparrow-file</name>
+    <url>http://maven.apache.org</url>
+
+    <build>
+        <finalName>sparrow-file</finalName>
+    </build>
+</project>

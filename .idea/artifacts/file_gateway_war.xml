@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="file-gateway:war">
+    <output-path>$PROJECT_DIR$/file-gateway/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>file-gateway</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="file-gateway-${sparrow_e_file_version}.war">
+      <element id="artifact" artifact-name="file-gateway:war exploded" />
+    </root>
+  </artifact>
+</component>

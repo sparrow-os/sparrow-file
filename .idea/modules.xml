@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/file-api/file-api.iml" filepath="$PROJECT_DIR$/file-api/file-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-dao-api/file-dao-api.iml" filepath="$PROJECT_DIR$/file-dao-api/file-dao-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-gateway/file-gateway.iml" filepath="$PROJECT_DIR$/file-gateway/file-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-protocol/file-protocol.iml" filepath="$PROJECT_DIR$/file-protocol/file-protocol.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-service/file-service.iml" filepath="$PROJECT_DIR$/file-service/file-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-sparrow-dao/file-sparrow-dao.iml" filepath="$PROJECT_DIR$/file-sparrow-dao/file-sparrow-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-test/file-test.iml" filepath="$PROJECT_DIR$/file-test/file-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sparrow-file.iml" filepath="$PROJECT_DIR$/.idea/sparrow-file.iml" />
+    </modules>
+  </component>
+</project>

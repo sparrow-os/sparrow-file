@@ -1,0 +1,5 @@
+com/sparrow/file/dto/AttachDTO.class
+com/sparrow/file/query/AttachRemark.class
+com/sparrow/file/query/EnableAttachQueryDTO.class
+com/sparrow/file/dto/AttachRefDTO.class
+com/sparrow/file/param/AttachUploadParam.class

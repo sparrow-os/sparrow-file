@@ -1,0 +1,64 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="file-gateway:war exploded">
+    <output-path>$PROJECT_DIR$/file-gateway/target/file-gateway-${sparrow_e_file_version}</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>true</exploded>
+        <module>file-gateway</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="file-gateway" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: jstl:jstl:1.2" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.12" />
+          <element id="library" level="project" name="Maven: javax.mail:mail:1.4.7" />
+          <element id="library" level="project" name="Maven: javax.activation:activation:1.1" />
+          <element id="library" level="project" name="Maven: javax.persistence:persistence-api:1.0" />
+          <element id="library" level="project" name="Maven: javax.inject:javax.inject:1" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-protocol-redis:1.0.0-SNAPSHOT" />
+          <element id="archive" name="file-service-1.0.0-SNAPSHOT.jar">
+            <element id="module-output" name="file-service" />
+          </element>
+          <element id="archive" name="file-api-1.0.0-SNAPSHOT.jar">
+            <element id="module-output" name="file-api" />
+          </element>
+          <element id="archive" name="file-protocol-1.0.0-SNAPSHOT.jar">
+            <element id="module-output" name="file-protocol" />
+          </element>
+          <element id="archive" name="file-dao-api-1.0.0-SNAPSHOT.jar">
+            <element id="module-output" name="file-dao-api" />
+          </element>
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-protocol-dao:1.0.0-SNAPSHOT" />
+          <element id="archive" name="file-sparrow-dao-1.0.0-SNAPSHOT.jar">
+            <element id="module-output" name="file-sparrow-dao" />
+          </element>
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-data-source:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-orm:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-json:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.83" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-container:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-loader:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-jedis:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: redis.clients:jedis:3.3.0" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-pool2:2.4.3" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-mvc:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.google.zxing:core:2.2" />
+          <element id="library" level="project" name="Maven: eu.bitwalker:UserAgentUtils:1.21" />
+          <element id="library" level="project" name="Maven: com.sparrow:sparrow-protocol:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.2.9" />
+          <element id="library" level="project" name="Maven: ch.qos.logback:logback-core:1.2.3" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/file-gateway/target/file-gateway-${sparrow_e_file_version}/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="file-gateway/web/Web" />
+    </root>
+  </artifact>
+</component>

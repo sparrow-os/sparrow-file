@@ -1,0 +1,7 @@
+com/sparrow/file/assemble/FileConfigAssemble$1.class
+com/sparrow/file/service/impl/AttachServiceImpl.class
+com/sparrow/file/assemble/AttachAssemble.class
+com/sparrow/file/assemble/FileConfigAssemble.class
+com/sparrow/file/bo/FileConfig.class
+com/sparrow/file/enums/UploadDealType.class
+com/sparrow/file/support/enums/FileError.class
