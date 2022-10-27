@@ -41,7 +41,7 @@ import static com.sparrow.constant.SparrowError.GLOBAL_DB_DELETE_ERROR;
 import static com.sparrow.constant.SparrowError.GLOBAL_DB_LOAD_ERROR;
 import static com.sparrow.constant.SparrowError.GLOBAL_DB_UPDATE_ERROR;
 
-@Named
+@Named("attachService")
 public class AttachServiceImpl implements AttachService, Downloader {
     private static Logger logger = LoggerFactory.getLogger(AttachServiceImpl.class);
     @Inject

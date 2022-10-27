@@ -72,7 +72,7 @@ public class FileUpload extends HttpServlet {
         Container container = ApplicationContext.getContainer();
         this.configAssemble = container.getBean("fileConfigAssemble");
         this.attachService = container.getBean("attachService");
-        this.cookieUtility = container.getBean(config.getInitParameter("cookieUtility"));
+        this.cookieUtility = container.getBean("cookieUtility");
         super.init(config);
     }
 
@@ -120,12 +120,18 @@ public class FileUpload extends HttpServlet {
     }
 
     private LoginToken getLoginUser(HttpServletRequest request) {
-        Authenticator authorizingSupport = ApplicationContext.getContainer().getBean(
-            SysObjectName.AUTHENTICATOR_SERVICE);
+//todo add gateway
+        LoginToken loginToken = new LoginToken();
+        loginToken.setUserId(1L);
+        loginToken.setUserName("admin");
+        loginToken.setDays(1);
+        return loginToken;
+        //        Authenticator authenticator = ApplicationContext.getContainer().getBean(
+//            SysObjectName.AUTHENTICATOR_SERVICE);
 
-        String token = this.cookieUtility.getPermission(request);
-        String deviceId = ServletUtility.getInstance().getDeviceId(request);
-        return authorizingSupport.authenticate(token, deviceId);
+//        String token = this.cookieUtility.getPermission(request);
+//        String deviceId = ServletUtility.getInstance().getDeviceId(request);
+//        return authenticator.authenticate(token, deviceId);
     }
 
     @Override

@@ -105,12 +105,13 @@
     </dependencies>
     <build>
         <filters>
-            <!--            <filter>src/main/configs/${env}.properties</filter>-->
+            <filter>src/main/configs/${env}.properties</filter>
         </filters>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
+                    <include>services/*</include>
                     <include>*.xml</include>
                     <include>*.properties</include>
                     <include>thumbnail/**/**</include>
