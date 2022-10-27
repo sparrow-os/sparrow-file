@@ -17,23 +17,14 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.sparrow</groupId>
+            <artifactId>sparrow-starter</artifactId>
+        </dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -43,17 +34,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
-        <dependency>
-            <groupId>eu.bitwalker</groupId>
-            <artifactId>UserAgentUtils</artifactId>
-            <version>1.21</version>
-        </dependency>
-        <!-- thymeleaf -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>2.3.2.RELEASE</version>
-        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -78,12 +59,9 @@
         </dependency>
         <dependency>
             <groupId>com.sparrow</groupId>
-            <artifactId>sparrow-container</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sparrow</groupId>
             <artifactId>sparrow-loader</artifactId>
         </dependency>
+
         <!--        <dependency>-->
         <!--            <groupId>com.sparrow</groupId>-->
         <!--            <artifactId>sparrow-jedis</artifactId>-->
@@ -102,6 +80,13 @@
             <artifactId>spring-jdbc</artifactId>
         </dependency>
 
+        <!-- thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>2.3.2.RELEASE</version>
+        </dependency>
+
     </dependencies>
     <build>
         <filters>
@@ -111,7 +96,6 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>services/*</include>
                     <include>*.xml</include>
                     <include>*.properties</include>
                     <include>thumbnail/**/**</include>

@@ -3,10 +3,9 @@ package com.sparrow.file.dao;
 import com.sparrow.file.po.AttachRef;
 import com.sparrow.file.query.EnableAttachQueryDTO;
 import com.sparrow.protocol.dao.DaoSupport;
-
 import java.util.List;
 
-public interface AttachRefDAO extends DaoSupport<AttachRef,Long> {
+public interface AttachRefDAO extends DaoSupport<AttachRef, Long> {
 
     void enable(EnableAttachQueryDTO enableAttach) throws Exception;
 

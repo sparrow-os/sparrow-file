@@ -17,11 +17,11 @@
     <orderEntry type="library" name="Maven: javax.persistence:persistence-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
     <orderEntry type="library" name="Maven: com.sparrow:sparrow-protocol:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.sparrow:sparrow-protocol-dao:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.sparrow:sparrow-protocol-redis:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="file-api" />
     <orderEntry type="module" module-name="file-protocol" />
     <orderEntry type="module" module-name="file-dao-api" />
-    <orderEntry type="library" name="Maven: com.sparrow:sparrow-protocol-dao:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="file-sparrow-dao" />
     <orderEntry type="library" name="Maven: com.sparrow:sparrow-data-source:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.sparrow:sparrow-orm:1.0.0-SNAPSHOT" level="project" />

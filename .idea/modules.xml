@@ -9,7 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/file-service/file-service.iml" filepath="$PROJECT_DIR$/file-service/file-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/file-sparrow-dao/file-sparrow-dao.iml" filepath="$PROJECT_DIR$/file-sparrow-dao/file-sparrow-dao.iml" />
       <module fileurl="file://$PROJECT_DIR$/file-test/file-test.iml" filepath="$PROJECT_DIR$/file-test/file-test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/sparrow-file.iml" filepath="$PROJECT_DIR$/.idea/sparrow-file.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sparrow-file.iml" filepath="$PROJECT_DIR$/sparrow-file.iml" />
     </modules>
   </component>
 </project>

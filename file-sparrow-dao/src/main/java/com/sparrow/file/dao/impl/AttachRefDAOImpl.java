@@ -4,9 +4,13 @@ import com.sparrow.file.dao.AttachRefDAO;
 import com.sparrow.file.po.AttachRef;
 import com.sparrow.file.query.AttachRemark;
 import com.sparrow.file.query.EnableAttachQueryDTO;
-import com.sparrow.orm.query.*;
+import com.sparrow.orm.query.BooleanCriteria;
+import com.sparrow.orm.query.Criteria;
+import com.sparrow.orm.query.OrderCriteria;
+import com.sparrow.orm.query.SearchCriteria;
+import com.sparrow.orm.query.UpdateCriteria;
+import com.sparrow.orm.query.UpdateSetClausePair;
 import com.sparrow.orm.template.impl.ORMStrategy;
-
 import com.sparrow.protocol.enums.StatusRecord;
 import java.util.List;
 import javax.inject.Named;
