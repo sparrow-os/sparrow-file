@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.sparrow</groupId>
-        <artifactId>sparrow-integration-bom</artifactId>
-        <version>1.0</version>
+        <artifactId>sparrow-zoo-bom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath/>
     </parent>
     <modules>
         <module>file-api</module>
@@ -19,7 +20,7 @@
     </modules>
 
     <artifactId>sparrow-file</artifactId>
-    <version>${sparrow_e_file_version}</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>sparrow-file</name>
     <url>http://maven.apache.org</url>
