@@ -3,8 +3,6 @@ package com.sparrow.file.servlet;
 import com.sparrow.constant.Config;
 import com.sparrow.constant.ConfigKeyLanguage;
 import com.sparrow.constant.File.SIZE;
-import com.sparrow.constant.SparrowError;
-import com.sparrow.constant.SysObjectName;
 import com.sparrow.constant.User;
 import com.sparrow.container.Container;
 import com.sparrow.core.cache.ExpirableCache;
@@ -17,6 +15,7 @@ import com.sparrow.file.assemble.FileConfigAssemble;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.post.processing.UploadPostProcessStrategy;
+import com.sparrow.file.support.enums.FileError;
 import com.sparrow.file.vo.UploadingProgress;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.json.Json;
@@ -165,7 +164,7 @@ public class FileUpload extends HttpServlet {
         int fileConfigLength = fileConfig
             .getLength();
         if (request.getContentLength() > fileConfigLength) {
-            status.setError(SparrowError.UPLOAD_OUT_OF_SIZE.getMessage());
+            status.setError(FileError.UPLOAD_OUT_OF_SIZE.getMessage());
             this.uploadEnd(status, pathKey, editor, response);
             return;
         }
@@ -206,7 +205,7 @@ public class FileUpload extends HttpServlet {
                         fileNameIndex + 13,
                         readString.length() - 3);
                     if (StringUtility.isNullOrEmpty(fileName)) {
-                        status.setError(SparrowError.UPLOAD_FILE_NAME_NULL.getMessage());
+                        status.setError(FileError.UPLOAD_FILE_NAME_NULL.getMessage());
                         this.uploadEnd(status, pathKey, editor, response);
                         return;
                     }
@@ -223,7 +222,7 @@ public class FileUpload extends HttpServlet {
                         .toLowerCase())) {
                         status.setContentType(com.sparrow.constant.File.ERROR_TYPE + "|"
                             + rightFileType);
-                        status.setError(SparrowError.UPLOAD_FILE_TYPE_ERROR.getMessage());
+                        status.setError(FileError.UPLOAD_FILE_TYPE_ERROR.getMessage());
                         this.uploadEnd(status, pathKey, editor, response);
                         return;
                     }
@@ -259,7 +258,7 @@ public class FileUpload extends HttpServlet {
             }
         } catch (IOException e) {
             logger.error("make thumbnail", e);
-            status.setError(SparrowError.UPLOAD_SERVICE_ERROR.getMessage());
+            status.setError(FileError.UPLOAD_SERVICE_ERROR.getMessage());
             this.uploadEnd(status, pathKey, editor, response);
         } finally {
             if (fileOutputStream != null) {
@@ -268,7 +267,7 @@ public class FileUpload extends HttpServlet {
                     fileOutputStream.close();
                     servletInputStream.close();
                 } catch (IOException e) {
-                    status.setError(SparrowError.UPLOAD_SERVICE_ERROR.getMessage());
+                    status.setError(FileError.UPLOAD_SERVICE_ERROR.getMessage());
                     this.uploadEnd(status, pathKey, editor, response);
                 }
             }

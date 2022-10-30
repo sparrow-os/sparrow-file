@@ -3,7 +3,7 @@ package com.sparrow.file.post.processing;
 import com.sparrow.constant.File;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.param.AttachUploadParam;
-import com.sparrow.utility.ImageUtility;
+import com.sparrow.file.support.utils.ImageUtility;
 import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

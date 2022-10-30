@@ -2,9 +2,9 @@ package com.sparrow.file.servlet;
 
 import com.sparrow.constant.Config;
 import com.sparrow.constant.Regex;
+import com.sparrow.file.support.utils.ImageUtility;
 import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
-import com.sparrow.utility.ImageUtility;
 import com.sparrow.utility.RegexUtility;
 import com.sparrow.utility.StringUtility;
 import java.io.File;

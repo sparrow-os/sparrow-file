@@ -2,7 +2,6 @@ package com.sparrow.file.service.impl;
 
 import com.sparrow.constant.Config;
 import com.sparrow.constant.File.SIZE;
-import com.sparrow.constant.SparrowError;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.AttachAssemble;
 import com.sparrow.file.dao.AttachDAO;
@@ -14,15 +13,16 @@ import com.sparrow.file.po.Attach;
 import com.sparrow.file.po.AttachRef;
 import com.sparrow.file.query.AttachRemark;
 import com.sparrow.file.query.EnableAttachQueryDTO;
+import com.sparrow.file.support.utils.ImageUtility;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.Downloader;
 import com.sparrow.protocol.constant.Extension;
+import com.sparrow.protocol.constant.SparrowError;
 import com.sparrow.protocol.dao.UniqueKeyCriteria;
 import com.sparrow.utility.CollectionsUtility;
 import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.HttpClient;
-import com.sparrow.utility.ImageUtility;
 import com.sparrow.utility.StringUtility;
 import java.io.File;
 import java.util.ArrayList;
@@ -36,10 +36,7 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.sparrow.constant.SparrowError.GLOBAL_DB_ADD_ERROR;
-import static com.sparrow.constant.SparrowError.GLOBAL_DB_DELETE_ERROR;
-import static com.sparrow.constant.SparrowError.GLOBAL_DB_LOAD_ERROR;
-import static com.sparrow.constant.SparrowError.GLOBAL_DB_UPDATE_ERROR;
+import static com.sparrow.protocol.constant.SparrowError.GLOBAL_DB_LOAD_ERROR;
 
 @Named("attachService")
 public class AttachServiceImpl implements AttachService, Downloader {
@@ -81,7 +78,7 @@ public class AttachServiceImpl implements AttachService, Downloader {
             }
         } catch (Exception e) {
             logger.error("delete attach", e);
-            throw new BusinessException(GLOBAL_DB_DELETE_ERROR);
+            throw new BusinessException(SparrowError.GLOBAL_DB_DELETE_ERROR);
         }
     }
 
@@ -104,7 +101,7 @@ public class AttachServiceImpl implements AttachService, Downloader {
             this.attachDao.addDownLoadTimes(fileId);
         } catch (Exception e) {
             logger.error("add attach download times", e);
-            throw new BusinessException(GLOBAL_DB_ADD_ERROR);
+            throw new BusinessException(SparrowError.GLOBAL_DB_ADD_ERROR);
         }
     }
 
@@ -150,7 +147,7 @@ public class AttachServiceImpl implements AttachService, Downloader {
             return attach.getFileId();
         } catch (Exception e) {
             logger.error("update attach", e);
-            throw new BusinessException(GLOBAL_DB_UPDATE_ERROR);
+            throw new BusinessException(SparrowError.GLOBAL_DB_UPDATE_ERROR);
         }
     }
 
