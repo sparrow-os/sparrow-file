@@ -6,7 +6,7 @@ import com.sparrow.container.Container;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.dto.AttachDTO;
-import com.sparrow.protocol.LoginToken;
+import com.sparrow.protocol.LoginUser;
 import com.sparrow.protocol.constant.Constant;
 import com.sparrow.support.Authenticator;
 import com.sparrow.support.Authorizer;
@@ -66,7 +66,7 @@ public class FileDownLoad extends HttpServlet {
         try {
             String permission = this.cookieUtility.getPermission(request);
             String deviceId = ServletUtility.getInstance().getDeviceId(request);
-            LoginToken loginToken = authenticator.authenticate(permission, deviceId);
+            LoginUser loginToken = authenticator.authenticate(permission, deviceId);
             String actionKey = ServletUtility.getInstance().getActionKey(request);
             accessible = authorizer.isPermitted(loginToken, actionKey);
         } catch (Exception e2) {

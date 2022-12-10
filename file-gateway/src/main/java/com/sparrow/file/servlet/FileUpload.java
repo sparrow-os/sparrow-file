@@ -19,12 +19,10 @@ import com.sparrow.file.support.enums.FileError;
 import com.sparrow.file.vo.UploadingProgress;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.json.Json;
-import com.sparrow.protocol.LoginToken;
+import com.sparrow.protocol.LoginUser;
 import com.sparrow.protocol.constant.Constant;
 import com.sparrow.protocol.constant.magic.Symbol;
-import com.sparrow.support.Authenticator;
 import com.sparrow.support.web.CookieUtility;
-import com.sparrow.support.web.ServletUtility;
 import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
@@ -101,7 +99,7 @@ public class FileUpload extends HttpServlet {
 
         String editor = request.getParameter("editor");
 
-        LoginToken loginToken = this.getLoginUser(request);
+        LoginUser loginToken = this.getLoginUser(request);
         if (loginToken == null || User.VISITOR_ID.equals(loginToken.getUserId())) {
             initVisitorUploadHtml(out, pathKey, editor);
             return;
@@ -118,9 +116,9 @@ public class FileUpload extends HttpServlet {
             + dialogLoginUrl + "&shortRegister=false'});\">" + ConfigUtility.getLanguageValue(ConfigKeyLanguage.CONTROL_TEXT_LOGIN) + "</a>");
     }
 
-    private LoginToken getLoginUser(HttpServletRequest request) {
+    private LoginUser getLoginUser(HttpServletRequest request) {
 //todo add gateway
-        LoginToken loginToken = new LoginToken();
+        LoginUser loginToken = new LoginUser();
         loginToken.setUserId(1L);
         loginToken.setUserName("admin");
         loginToken.setDays(1);
@@ -135,7 +133,7 @@ public class FileUpload extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        LoginToken loginToken = this.getLoginUser(request);
+        LoginUser loginToken = this.getLoginUser(request);
         if (loginToken == null || User.VISITOR_ID.equals(loginToken.getUserId())) {
             logger.error("current user is not login");
             return;
@@ -378,7 +376,7 @@ public class FileUpload extends HttpServlet {
     }
 
     public String assembleFileName(AttachUploadParam uploadBo, FileConfig fileConfig,
-        LoginToken loginToken) {
+        LoginUser loginToken) {
         // 文件web路径
         String fileWebUrl = fileConfig.getPath();
         UploadingProgress uploadingProgress = this.expirableStatusCache.get(uploadBo.getFileSerialNumber());

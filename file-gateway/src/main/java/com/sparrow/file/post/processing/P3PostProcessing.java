@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 @Named
 public class P3PostProcessing implements UploadPostProcessing {
-    private static Logger logger= LoggerFactory.getLogger(P3PostProcessing.class);
+    private static Logger logger = LoggerFactory.getLogger(P3PostProcessing.class);
+
     @Override
     public void uploadPostProcessing(String physicalFullPath, AttachUploadParam attachUploadBo, FileConfig fileConfig) {
         String bigPath = physicalFullPath.replace(

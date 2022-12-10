@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>sparrow-zoo-bom</artifactId>
-        <groupId>com.sparrow</groupId>
+        <groupId>com.sparrowzoo</groupId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
@@ -17,7 +17,7 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.sparrow</groupId>
+            <groupId>com.sparrowzoo</groupId>
             <artifactId>sparrow-starter</artifactId>
         </dependency>
         <dependency>
@@ -45,19 +45,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sparrow</groupId>
+            <groupId>com.sparrowzoo</groupId>
             <artifactId>sparrow</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sparrow.file</groupId>
+            <groupId>com.sparrowzoo.file</groupId>
             <artifactId>file-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sparrow</groupId>
+            <groupId>com.sparrowzoo</groupId>
             <artifactId>sparrow-json</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sparrow</groupId>
+            <groupId>com.sparrowzoo</groupId>
             <artifactId>sparrow-loader</artifactId>
         </dependency>
 
@@ -67,7 +67,7 @@
         <!--        </dependency>-->
 
         <dependency>
-            <groupId>com.sparrow</groupId>
+            <groupId>com.sparrowzoo</groupId>
             <artifactId>sparrow-protocol</artifactId>
         </dependency>
         <dependency>
@@ -89,7 +89,7 @@
     </dependencies>
     <build>
         <filters>
-            <filter>src/main/configs/${env}.properties</filter>
+            <filter>src/main/configs/dev.properties</filter>
         </filters>
         <resources>
             <resource>
