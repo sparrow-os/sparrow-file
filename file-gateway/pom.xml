@@ -74,6 +74,17 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -89,7 +100,7 @@
     </dependencies>
     <build>
         <filters>
-            <filter>src/main/configs/dev.properties</filter>
+            <filter>src/main/configs/${env}.properties</filter>
         </filters>
         <resources>
             <resource>
