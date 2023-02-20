@@ -1,8 +1,7 @@
 package com.sparrow.file.po;
 
-import com.sparrow.protocol.POJO;
 import com.sparrow.protocol.MethodOrder;
-
+import com.sparrow.protocol.dao.PO;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,17 +9,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "attach")
-public class Attach implements POJO {
+public class Attach extends PO {
     /**
      * 主键ID
      */
     private Long id;
     /**
-     * 文件id
+     * 文件id(文件的唯一标识)
      */
     private String fileId;
-
     private String contentType;
+    private Boolean isCover;
+    private Integer width;
+    private Integer height;
+    private Integer businessType;
+    private Integer businessId;
     /**
      * 文件的实际大小
      */
@@ -29,23 +32,10 @@ public class Attach implements POJO {
      * 下载次数
      */
     private Long downloadTimes;
-
-    /**
-     * 文件权限级别
-     */
-    private Integer readLevel = 0;
     /**
      * 客户端文件名
      */
     private String clientFileName;
-    /**
-     * 文件上传 时间
-     */
-    private Long createTime;
-    /**
-     * 上传用户
-     */
-    private Long createUserId;
 
     public void setId(Long id) {
         this.id = id;
@@ -62,8 +52,8 @@ public class Attach implements POJO {
      */
     public Attach(String clientFileName, String contentType, Long authorId) {
         this.downloadTimes = 0L;
-        this.createUserId = authorId;
-        this.createTime = System.currentTimeMillis();
+        this.setCreateUserId(authorId);
+        this.setGmtCreate(System.currentTimeMillis());
         this.clientFileName = clientFileName;
         this.contentType = contentType;
         this.contentLength = 0L;
@@ -107,34 +97,8 @@ public class Attach implements POJO {
         return this.contentType;
     }
 
-    @Column(name = "read_level", columnDefinition = "int(11) UNSIGNED DEFAULT 0", updatable = false)
-    @MethodOrder(order = 6)
-    public Integer getReadLevel() {
-        return readLevel;
-    }
-
-    @Column(name = "create_time", columnDefinition = "bigint(20) DEFAULT 0", nullable = false, updatable = false)
-    @MethodOrder(order = 7)
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    @Column(name = "create_user_id", columnDefinition = "int(11) UNSIGNED DEFAULT 0", nullable = false, updatable = false)
-    @MethodOrder(order = 8)
-    public Long getCreateUserId() {
-        return createUserId;
-    }
-
     public void setClientFileName(String clientFileName) {
         this.clientFileName = clientFileName;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public void setCreateUserId(Long createUserId) {
-        this.createUserId = createUserId;
     }
 
     public void setDownloadTimes(Long downloadTimes) {
@@ -151,9 +115,5 @@ public class Attach implements POJO {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
-    }
-
-    public void setReadLevel(Integer readLevel) {
-        this.readLevel = readLevel;
     }
 }

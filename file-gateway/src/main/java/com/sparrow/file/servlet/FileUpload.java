@@ -134,7 +134,7 @@ public class FileUpload extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
         LoginUser loginToken = this.getLoginUser(request);
-        if (loginToken == null || User.VISITOR_ID.equals(loginToken.getUserId())) {
+        if (User.VISITOR_ID.equals(loginToken.getUserId())) {
             logger.error("current user is not login");
             return;
         }

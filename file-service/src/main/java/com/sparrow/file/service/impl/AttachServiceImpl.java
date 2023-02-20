@@ -5,12 +5,9 @@ import com.sparrow.constant.File.SIZE;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.AttachAssemble;
 import com.sparrow.file.dao.AttachDAO;
-import com.sparrow.file.dao.AttachRefDAO;
 import com.sparrow.file.dto.AttachDTO;
-import com.sparrow.file.dto.AttachRefDTO;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.po.Attach;
-import com.sparrow.file.po.AttachRef;
 import com.sparrow.file.query.AttachRemark;
 import com.sparrow.file.query.EnableAttachQueryDTO;
 import com.sparrow.file.support.utils.ImageUtility;
@@ -45,9 +42,6 @@ public class AttachServiceImpl implements AttachService, Downloader {
     private AttachAssemble attachAssemble;
     @Inject
     private AttachDAO attachDao;
-    @Inject
-    private AttachRefDAO attachRefDao;
-
     private FileUtility fileUtility = FileUtility.getInstance();
 
     @Override
@@ -79,19 +73,6 @@ public class AttachServiceImpl implements AttachService, Downloader {
         } catch (Exception e) {
             logger.error("delete attach", e);
             throw new BusinessException(SparrowError.GLOBAL_DB_DELETE_ERROR);
-        }
-    }
-
-    @Override
-    public List<AttachRefDTO> getEnableAttachList(Long belongId, String belongType) throws BusinessException {
-        try {
-            List<AttachRef> attachRefs = this.attachRefDao.getEnableAttachList(belongId, belongType);
-            List<Long> attachIdList = attachRefs.stream().map(AttachRef::getId).collect(Collectors.toList());
-            Map<Long, Attach> attacheMap = this.attachDao.getAttachMap(attachIdList);
-            return this.attachAssemble.po2dtoList(attacheMap, attachRefs);
-        } catch (Exception e) {
-            logger.error("get attach list", e);
-            throw new BusinessException(GLOBAL_DB_LOAD_ERROR);
         }
     }
 
@@ -164,50 +145,6 @@ public class AttachServiceImpl implements AttachService, Downloader {
     @Override
     public void modifyStatus(Long belongId, String belongType,
         List<AttachRemark> attachRemarks) throws BusinessException {
-        try {
-            List<AttachRef> originAttachList = this.attachRefDao.getAttachList(belongId, belongType);
-            List<AttachRemark> enableAttachRemark = new ArrayList<>();
-            List<AttachRemark> newAttachRemark = new ArrayList<>();
-            Set<Long> originRefSet = new HashSet<>();
-            for (AttachRef ref : originAttachList) {
-                originRefSet.add(ref.getId());
-            }
-            if (!CollectionsUtility.isNullOrEmpty(attachRemarks)) {
-                for (AttachRemark attachRemark : attachRemarks) {
-                    if (originRefSet.contains(attachRemark.getRefId())) {
-                        enableAttachRemark.add(attachRemark);
-                    } else {
-                        newAttachRemark.add(attachRemark);
-                    }
-                }
-            }
-            //validate new attach is found
-            if (!CollectionsUtility.isNullOrEmpty(newAttachRemark)) {
-                for (AttachRemark attachRemark : newAttachRemark) {
-                    UniqueKeyCriteria uniqueKeyCriteria = UniqueKeyCriteria.createUniqueCriteria(attachRemark.getFileId(), "fileId");
-                    if (this.attachDao.getCountByUnique(uniqueKeyCriteria) == 0) {
-                        throw new RuntimeException("attach file '" + attachRemark.getFileId() + "'not found");
-                    }
-                }
-            }
-            //disable all origin
-            if (!CollectionsUtility.isNullOrEmpty(originAttachList)) {
-                this.attachRefDao.disable(belongType, belongId);
-            }
-            //enable old
-            if (!CollectionsUtility.isNullOrEmpty(enableAttachRemark)) {
-                this.attachRefDao.enable(new EnableAttachQueryDTO(belongType, belongId, enableAttachRemark));
-            }
-            //add new attach
-            if (!CollectionsUtility.isNullOrEmpty(newAttachRemark)) {
-                for (AttachRemark attachRemark : newAttachRemark) {
-                    AttachRef attachRef = this.attachAssemble.attachRemark2Ref(belongId, belongType, attachRemark);
-                    this.attachRefDao.insert(attachRef);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("modify attach status error", e);
-            throw new BusinessException(SparrowError.GLOBAL_DB_UPDATE_ERROR);
-        }
+       
     }
 }

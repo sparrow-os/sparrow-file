@@ -18,8 +18,6 @@ public interface AttachService extends Downloader {
 
     AttachDTO getAttach(String fileId) throws BusinessException;
 
-    List<AttachRefDTO> getEnableAttachList(Long belongId, String belongBusiness) throws BusinessException;
-
     void addDownLoadTimes(String id) throws BusinessException;
 
     void modifyStatus(Long belongId, String business, List<AttachRemark> attachRemarks) throws BusinessException;
