@@ -18,38 +18,27 @@
 package com.sparrow.file.support.utils;
 
 import com.sparrow.cg.MethodAccessor;
-import com.sparrow.constant.File;
 import com.sparrow.constant.Regex;
 import com.sparrow.core.TypeConverter;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.exception.Asserts;
+import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.enums.FileError;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.POJO;
 import com.sparrow.protocol.constant.Extension;
-import com.sparrow.utility.FileUtility;
-import com.sparrow.utility.HttpClient;
-import com.sparrow.utility.JSUtility;
-import com.sparrow.utility.RegexUtility;
-import com.sparrow.utility.StringUtility;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import com.sparrow.utility.*;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import javax.imageio.ImageIO;
 
 public class ImageUtility {
 
@@ -69,7 +58,7 @@ public class ImageUtility {
         String extension = FileUtility.getInstance().getFileNameProperty(srcImagePath).getExtension();
         // 如果为gif图则直接保存
         if (Extension.GIF.equalsIgnoreCase(extension)) {
-            if (descImagePath.contains(File.SIZE.BIG)) {
+            if (descImagePath.contains(FileConstant.SIZE.BIG)) {
                 FileUtility.getInstance().copy(srcImagePath, descImagePath);
             }
             return;
@@ -306,20 +295,20 @@ public class ImageUtility {
  */
 
     /**
-     * 图版剪切
+     * 图片剪切
      */
     public static void saveSubImage(String imagePath, Rectangle subImageBounds,
         String subImageFilePath) throws IOException {
         BufferedImage subImage = getSubImage(imagePath, subImageBounds);
         String extension = FileUtility.getInstance().getFileNameProperty(subImageFilePath).getExtensionWithoutDot();
-        ImageIO.write(subImage, extension, new FileOutputStream(new java.io.File(subImageFilePath)));
+        ImageIO.write(subImage, extension, Files.newOutputStream(Paths.get(subImageFilePath)));
         subImage.flush();
         subImage.flush();
     }
 
     public static BufferedImage getSubImage(String imagePath, Rectangle subImageBounds) throws IOException {
         java.io.File file = new java.io.File(imagePath);
-        InputStream in = new FileInputStream(file);
+        InputStream in = Files.newInputStream(file.toPath());
         BufferedImage image = ImageIO.read(in);
         if (subImageBounds.x < 0 || subImageBounds.y < 0
             || subImageBounds.width - subImageBounds.x > image.getWidth()

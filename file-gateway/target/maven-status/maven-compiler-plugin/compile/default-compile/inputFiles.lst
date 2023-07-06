@@ -1,4 +1,3 @@
-/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/boot/Application.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/post/processing/ThumbnailPostProcessing.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/post/processing/BreakUpPostProcessing.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/post/processing/UploadPostProcessing.java
@@ -7,6 +6,5 @@
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/controller/FileController.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/post/processing/UploadPostProcessStrategy.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/servlet/FileDownLoad.java
-/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/vo/UploadingProgress.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/servlet/Thumbnail.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-gateway/src/main/java/com/sparrow/file/servlet/FileUpload.java

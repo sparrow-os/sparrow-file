@@ -5,7 +5,7 @@ public class AttachUploadParam {
     /**
      * 文件上传生成的序列号
      */
-    private String fileSerialNumber;
+    private String serialNumber;
     /**
      * 目录的配置key,即belong business
      */
@@ -15,14 +15,6 @@ public class AttachUploadParam {
     private String clientFileName;
     private String contentType;
     private Long contentLength;
-
-    public String getFileSerialNumber() {
-        return fileSerialNumber;
-    }
-
-    public void setFileSerialNumber(String fileSerialNumber) {
-        this.fileSerialNumber = fileSerialNumber;
-    }
 
     public String getPathKey() {
         return pathKey;
@@ -64,9 +56,6 @@ public class AttachUploadParam {
         this.contentLength = contentLength;
     }
 
-    public boolean isImage() {
-        return this.contentType.split("/")[0].toLowerCase().equals("image");
-    }
 
     public String getEditor() {
         return editor;
@@ -74,5 +63,13 @@ public class AttachUploadParam {
 
     public void setEditor(String editor) {
         this.editor = editor;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 }

@@ -1,30 +1,28 @@
 package com.sparrow.file.dto;
 
-/**
- * Created by harry on 17/10/11.
- */
 public class AttachDTO {
-    /**
-     * 文件id
-     */
-    private String fileId;
+    private Long id;
     private String contentType;
+    private Integer width;
+    private Integer height;
+    private Integer businessType;
+    private Integer businessId;
+    /**
+     * 文件的实际大小
+     */
     private Long contentLength;
-    private Long downLoadTimes;
-    private Integer readLevel = 0;
+    /**
+     * 下载次数
+     */
+    private Long downloadTimes;
+    /**
+     * 客户端文件名
+     */
     private String clientFileName;
-    private String createTime;
+
+    private String gmtCreate;
     private Long createUserId;
     private String url;
-
-
-    public String getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
-    }
 
 
     public String getContentType() {
@@ -41,26 +39,6 @@ public class AttachDTO {
 
     public void setContentLength(Long contentLength) {
         this.contentLength = contentLength;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getDownLoadTimes() {
-        return downLoadTimes;
-    }
-
-    public void setDownLoadTimes(Long downLoadTimes) {
-        this.downLoadTimes = downLoadTimes;
-    }
-
-    public Integer getReadLevel() {
-        return readLevel;
-    }
-
-    public void setReadLevel(Integer readLevel) {
-        this.readLevel = readLevel;
     }
 
     public String getClientFileName() {
@@ -80,10 +58,6 @@ public class AttachDTO {
         this.createUserId = createUserId;
     }
 
-    public String getCreateTime() {
-        return createTime;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -92,8 +66,60 @@ public class AttachDTO {
         this.url = url;
     }
 
-    public boolean isImage() {
-        return this.contentType.split("/")[0].toLowerCase().equals("image");
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getBusinessType() {
+        return businessType;
+    }
+
+    public void setBusinessType(Integer businessType) {
+        this.businessType = businessType;
+    }
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public Long getDownloadTimes() {
+        return downloadTimes;
+    }
+
+    public void setDownloadTimes(Long downloadTimes) {
+        this.downloadTimes = downloadTimes;
+    }
+
+    public String getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(String gmtCreate) {
+        this.gmtCreate = gmtCreate;
     }
 }
 

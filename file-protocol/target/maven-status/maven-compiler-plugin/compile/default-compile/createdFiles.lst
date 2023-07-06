@@ -1,5 +1,6 @@
 com/sparrow/file/dto/AttachDTO.class
-com/sparrow/file/query/AttachRemark.class
-com/sparrow/file/query/EnableAttachQueryDTO.class
-com/sparrow/file/dto/AttachRefDTO.class
+com/sparrow/file/UploadingProgress.class
 com/sparrow/file/param/AttachUploadParam.class
+com/sparrow/file/param/AttachRemark.class
+com/sparrow/file/param/ImageCropperParam.class
+com/sparrow/file/param/EnableAttachParam.class

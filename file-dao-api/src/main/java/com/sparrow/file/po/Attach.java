@@ -2,6 +2,7 @@ package com.sparrow.file.po;
 
 import com.sparrow.protocol.MethodOrder;
 import com.sparrow.protocol.dao.PO;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,11 +18,9 @@ public class Attach extends PO {
     /**
      * 文件id(文件的唯一标识)
      */
-    private String fileId;
+    private String serialNumber;
     private String contentType;
-    private Boolean isCover;
-    private Integer width;
-    private Integer height;
+    private String pathKey;
     private Integer businessType;
     private Integer businessId;
     /**
@@ -67,10 +66,10 @@ public class Attach extends PO {
         return this.id;
     }
 
-    @Column(name = "file_id", columnDefinition = "varchar(64)", unique = true)
+    @Column(name = "serial_number", columnDefinition = "varchar(64)", unique = true)
     @MethodOrder(order = 1)
-    public String getFileId() {
-        return fileId;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
     @Column(name = "client_file_name", columnDefinition = "varchar(256) DEFAULT ''", updatable = false, nullable = false)
@@ -97,6 +96,37 @@ public class Attach extends PO {
         return this.contentType;
     }
 
+    @Column(name = "path_key", columnDefinition = "varchar(32) DEFAULT ''", updatable = false, nullable = false)
+    @MethodOrder(order = 5.1F)
+    public String getPathKey() {
+        return pathKey;
+    }
+
+
+    public void setPathKey(String pathKey) {
+        this.pathKey = pathKey;
+    }
+
+    @Column(name = "business_type", columnDefinition = "tinyint(10) DEFAULT 0", updatable = false, nullable = false)
+    @MethodOrder(order = 5.3F)
+    public Integer getBusinessType() {
+        return businessType;
+    }
+
+    public void setBusinessType(Integer businessType) {
+        this.businessType = businessType;
+    }
+
+    @Column(name = "business_id", columnDefinition = "tinyint(10) UNSIGNED DEFAULT 0", updatable = false, nullable = false)
+    @MethodOrder(order = 5.5F)
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
     public void setClientFileName(String clientFileName) {
         this.clientFileName = clientFileName;
     }
@@ -105,8 +135,8 @@ public class Attach extends PO {
         this.downloadTimes = downloadTimes;
     }
 
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public void setContentLength(Long contentLength) {

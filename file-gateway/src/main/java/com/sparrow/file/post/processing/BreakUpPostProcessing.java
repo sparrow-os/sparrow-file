@@ -1,14 +1,15 @@
 package com.sparrow.file.post.processing;
 
 import com.sparrow.constant.Config;
-import com.sparrow.constant.File;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.param.AttachUploadParam;
+import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.utils.ImageUtility;
 import com.sparrow.utility.ConfigUtility;
-import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Named;
 
 @Named
 public class BreakUpPostProcessing implements UploadPostProcessing {
@@ -20,7 +21,7 @@ public class BreakUpPostProcessing implements UploadPostProcessing {
             .getValue(Config.RESOURCE_PHYSICAL_PATH)
             + ConfigUtility.getValue(Config.WATER_MARK);
         String breakup = physicalFullPath.replace(
-            File.SIZE.ORIGIN, File.SIZE.BIG);
+            FileConstant.SIZE.ORIGIN, FileConstant.SIZE.BIG);
         try {
             ImageUtility.makeThumbnail(physicalFullPath,
                 breakup, fileConfig

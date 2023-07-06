@@ -1,8 +1,13 @@
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/assemble/AttachAssemble.java
-/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/enums/UploadDealType.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/assemble/FileConfigAssemble.java
-/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/bo/FileConfig.java
-/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/enums/FileModule.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/constant/FileConstant.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/utils/path/url/PathUrlConverter.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/enums/FileError.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/utils/ImageUtility.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/constant/PathConfig.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/enums/UploadDealType.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/utils/FlashUtility.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/bo/FileConfig.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/enums/FileModule.java
+/Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/support/utils/AttachUrlUtility.java
 /Users/zhanglizhi/workspace/sparrow/sparrow-zoo/sparrow-file/file-service/src/main/java/com/sparrow/file/service/impl/AttachServiceImpl.java

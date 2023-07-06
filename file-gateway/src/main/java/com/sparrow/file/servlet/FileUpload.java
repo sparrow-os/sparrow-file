@@ -2,7 +2,6 @@ package com.sparrow.file.servlet;
 
 import com.sparrow.constant.Config;
 import com.sparrow.constant.ConfigKeyLanguage;
-import com.sparrow.constant.File.SIZE;
 import com.sparrow.constant.User;
 import com.sparrow.container.Container;
 import com.sparrow.core.cache.ExpirableCache;
@@ -10,55 +9,50 @@ import com.sparrow.core.cache.SoftExpirableCache;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.core.spi.JsonFactory;
 import com.sparrow.enums.LoginType;
+import com.sparrow.file.UploadingProgress;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.FileConfigAssemble;
 import com.sparrow.file.bo.FileConfig;
+import com.sparrow.file.dto.AttachDTO;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.post.processing.UploadPostProcessStrategy;
+import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.enums.FileError;
-import com.sparrow.file.vo.UploadingProgress;
+import com.sparrow.file.support.utils.AttachUrlUtility;
+import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.json.Json;
+import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.LoginUser;
+import com.sparrow.protocol.ThreadContext;
 import com.sparrow.protocol.constant.Constant;
 import com.sparrow.protocol.constant.magic.Symbol;
-import com.sparrow.support.web.CookieUtility;
 import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
-/**
- * @author harry
- */
 public class FileUpload extends HttpServlet {
 
     private static Logger logger = LoggerFactory.getLogger(FileUpload.class);
-    /**
-     * 类序列号
-     */
-    private static final long serialVersionUID = -5830767724923946646L;
-
     private ExpirableCache<String, UploadingProgress> expirableStatusCache = new SoftExpirableCache<>("uploading-progress", 10);
-
-    /**
-     * 同步散列表保存文件上传进度类的引用
-     */
-    private CookieUtility cookieUtility;
     private FileConfigAssemble configAssemble;
     private AttachService attachService;
+
+    private PathUrlConverter pathUrlConverter;
 
     public FileUpload() {
         super();
@@ -69,7 +63,7 @@ public class FileUpload extends HttpServlet {
         Container container = ApplicationContext.getContainer();
         this.configAssemble = container.getBean("fileConfigAssemble");
         this.attachService = container.getBean("attachService");
-        this.cookieUtility = container.getBean("cookieUtility");
+        this.pathUrlConverter = container.getBean("pathUrlConverter");
         super.init(config);
     }
 
@@ -80,11 +74,11 @@ public class FileUpload extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws IOException {
+            throws IOException {
 
         PrintWriter out = response.getWriter();
         //out.write(request.getServerName());
-        response.setCharacterEncoding(Constant.CHARSET_UTF_8);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         String fileSerialNumber = request.getParameter("file-serial-number");
         if (fileSerialNumber != null) {
             response.setHeader("Content-Type", Constant.CONTENT_TYPE_JAVASCRIPT);
@@ -99,7 +93,7 @@ public class FileUpload extends HttpServlet {
 
         String editor = request.getParameter("editor");
 
-        LoginUser loginToken = this.getLoginUser(request);
+        LoginUser loginToken = ThreadContext.getLoginToken();
         if (loginToken == null || User.VISITOR_ID.equals(loginToken.getUserId())) {
             initVisitorUploadHtml(out, pathKey, editor);
             return;
@@ -109,37 +103,22 @@ public class FileUpload extends HttpServlet {
 
     private void initVisitorUploadHtml(PrintWriter out, String pathKey, String editor) {
         String dialogLoginUrl = ConfigUtility.getValue(Config.LOGIN_TYPE_KEY
-            .get(LoginType.DIALOG_LOGIN))
-            + "?option=upload&parameter=" + pathKey + "&editor=" + editor;
+                .get(LoginType.DIALOG_LOGIN))
+                + "?option=upload&parameter=" + pathKey + "&editor=" + editor;
         out.write("<script type=\"text/javascript\">document.domain='" + ConfigUtility.getValue(Config.ROOT_DOMAIN) + "'</script>");
         out.write("<a href=\"javascript:parent.$.window({showHead:false,url:'"
-            + dialogLoginUrl + "&shortRegister=false'});\">" + ConfigUtility.getLanguageValue(ConfigKeyLanguage.CONTROL_TEXT_LOGIN) + "</a>");
-    }
-
-    private LoginUser getLoginUser(HttpServletRequest request) {
-//todo add gateway
-        LoginUser loginToken = new LoginUser();
-        loginToken.setUserId(1L);
-        loginToken.setUserName("admin");
-        loginToken.setDays(1);
-        return loginToken;
-        //        Authenticator authenticator = ApplicationContext.getContainer().getBean(
-//            SysObjectName.AUTHENTICATOR_SERVICE);
-
-//        String token = this.cookieUtility.getPermission(request);
-//        String deviceId = ServletUtility.getInstance().getDeviceId(request);
-//        return authenticator.authenticate(token, deviceId);
+                + dialogLoginUrl + "&shortRegister=false'});\">" + ConfigUtility.getLanguageValue(ConfigKeyLanguage.CONTROL_TEXT_LOGIN) + "</a>");
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        LoginUser loginToken = this.getLoginUser(request);
+        LoginUser loginToken = ThreadContext.getLoginToken();
         if (User.VISITOR_ID.equals(loginToken.getUserId())) {
             logger.error("current user is not login");
             return;
         }
         logger.info("---------file uploading-----------");
-        byte[] buffer = new byte[1024 * 1024];
+        byte[] buffer = new byte[1024];
         int readLength;
         int fileNameIndex;
         String readString;
@@ -148,78 +127,79 @@ public class FileUpload extends HttpServlet {
         String physicalFullPath = Symbol.EMPTY;
 
         UploadingProgress status;
-        AttachUploadParam attachUploadBo;
+        AttachUploadParam attachUploadParam;
         try {
-            attachUploadBo = this.assembleFileInfo(request);
-            status = this.expirableStatusCache.get(attachUploadBo.getFileSerialNumber());
-        } catch (IOException ignore) {
+            attachUploadParam = this.assembleFileInfo(request);
+            status = this.expirableStatusCache.get(attachUploadParam.getSerialNumber());
+        } catch (IOException e) {
+            logger.error("fetch status error", e);
             return;
         }
 
-        String pathKey = attachUploadBo.getPathKey();
-        String editor = attachUploadBo.getEditor();
+        String pathKey = attachUploadParam.getPathKey();
+        String editor = attachUploadParam.getEditor();
         FileConfig fileConfig = this.configAssemble.assemble(pathKey);
         int fileConfigLength = fileConfig
-            .getLength();
+                .getLength();
         if (request.getContentLength() > fileConfigLength) {
             status.setError(FileError.UPLOAD_OUT_OF_SIZE.getMessage());
             this.uploadEnd(status, pathKey, editor, response);
             return;
         }
 
-        attachUploadBo.setCreateUserId(loginToken.getUserId());
+        attachUploadParam.setCreateUserId(loginToken.getUserId());
         FileOutputStream fileOutputStream = null;
         ServletInputStream servletInputStream = null;
         try {
             servletInputStream = request.getInputStream();
             while ((readLength = servletInputStream.readLine(buffer,
-                0, buffer.length)) != -1) {
+                    0, buffer.length)) != -1) {
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 status.setReadLength(status.getReadLength()
-                    + readLength);
+                        + readLength);
                 readString = new String(buffer, 0, readLength,
-                    StandardCharsets.UTF_8);
+                        StandardCharsets.UTF_8);
 
                 if (StringUtility.isNullOrEmpty(fileEndFlag)) {
                     // -----------------------------7da3992a803bc--为文件头结尾标记
                     fileEndFlag = readString.substring(0,
-                        readLength - 2)
-                        + "--"
-                        + readString.substring(readLength - 2);
+                            readLength - 2)
+                            + "--"
+                            + readString.substring(readLength - 2);
                     continue;
                 }
                 fileNameIndex = readString
-                    .indexOf("\"; filename=\"");
+                        .indexOf("\"; filename=\"");
                 if (fileNameIndex != -1
-                    && StringUtility.isNullOrEmpty(fileName)) {
+                        && StringUtility.isNullOrEmpty(fileName)) {
                     // Content-Disposition: form-data;
                     // name="file_upload"
                     // filename="上传的文件名.扩展名"
                     fileName = readString.substring(
-                        fileNameIndex + 13,
-                        readString.length() - 3);
+                            fileNameIndex + 13,
+                            readString.length() - 3);
                     if (StringUtility.isNullOrEmpty(fileName)) {
                         status.setError(FileError.UPLOAD_FILE_NAME_NULL.getMessage());
                         this.uploadEnd(status, pathKey, editor, response);
                         return;
                     }
-                    attachUploadBo.setClientFileName(fileName
-                        .substring(fileName.lastIndexOf('\\') + 1));
-                    status.setClientFileName(attachUploadBo.getClientFileName());
+                    attachUploadParam.setClientFileName(fileName
+                            .substring(fileName.lastIndexOf('\\') + 1));
+                    status.setClientFileName(attachUploadParam.getClientFileName());
 
                     String rightFileType = ConfigUtility
-                        .getValue(com.sparrow.constant.File.RIGHT_TYPE
-                            + "_" + pathKey.toLowerCase());
+                            .getValue(FileConstant.RIGHT_TYPE
+                                    + "_" + pathKey.toLowerCase());
                     if (rightFileType != null
-                        && !rightFileType.toLowerCase().contains(FileUtility.getInstance()
-                        .getFileNameProperty(fileName).getExtension()
-                        .toLowerCase())) {
-                        status.setContentType(com.sparrow.constant.File.ERROR_TYPE + "|"
-                            + rightFileType);
+                            && !rightFileType.toLowerCase().contains(FileUtility.getInstance()
+                            .getFileNameProperty(fileName).getExtension()
+                            .toLowerCase())) {
+                        status.setContentType(FileConstant.ERROR_TYPE + "|"
+                                + rightFileType);
                         status.setError(FileError.UPLOAD_FILE_TYPE_ERROR.getMessage());
                         this.uploadEnd(status, pathKey, editor, response);
                         return;
@@ -228,24 +208,34 @@ public class FileUpload extends HttpServlet {
                 }
 
                 if (readString.contains("Content-Type")
-                    && StringUtility.isNullOrEmpty(status.getContentType())) {
+                        && StringUtility.isNullOrEmpty(status.getContentType())) {
                     // Content-Type: application/msword
                     readLength = servletInputStream.readLine(buffer,
-                        0, buffer.length);
+                            0, buffer.length);
                     status.setContentType(readString.split(":")[1]
-                        .trim());
+                            .trim());
                     status.setReadLength(status
-                        .getReadLength() + readLength);
+                            .getReadLength() + readLength);
 
-                    attachUploadBo.setContentType(status.getContentType());
-                    physicalFullPath = this.assembleFileName(attachUploadBo, fileConfig, loginToken);
-                    File file = new File(physicalFullPath.substring(0,
-                        physicalFullPath.lastIndexOf("/") + 1));
+                    attachUploadParam.setContentType(status.getContentType());
+
+
+                    UploadingProgress uploadingProgress = this.expirableStatusCache.get(attachUploadParam.getSerialNumber());
+
+                    if (fileConfig.getPath().equals("$ShuffleFileId")) {
+                        AttachDTO attach = this.attachService.generateFileId(attachUploadParam);
+                        physicalFullPath = AttachUrlUtility.getShuffleImagePhysicalPath(attach, FileConstant.SIZE.ORIGIN);
+                    } else {
+                        physicalFullPath = AttachUrlUtility.getPhysicalFilePath(attachUploadParam, fileConfig, loginToken);
+                    }
+                    uploadingProgress.setFileUrl(this.pathUrlConverter.getWebUrlByPhysicalFileName(physicalFullPath));
+                    FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(physicalFullPath);
+                    File file = new File(fileNameProperty.getDirectory());
                     if (!file.exists()) {
                         file.mkdirs();
                     }
                     fileOutputStream = new FileOutputStream(
-                        physicalFullPath);
+                            physicalFullPath);
                     continue;
                 }
                 // 如果是文件的结尾
@@ -258,6 +248,8 @@ public class FileUpload extends HttpServlet {
             logger.error("make thumbnail", e);
             status.setError(FileError.UPLOAD_SERVICE_ERROR.getMessage());
             this.uploadEnd(status, pathKey, editor, response);
+        } catch (BusinessException e) {
+            throw new RuntimeException(e);
         } finally {
             if (fileOutputStream != null) {
                 try {
@@ -270,27 +262,27 @@ public class FileUpload extends HttpServlet {
                 }
             }
         }
-        if (!attachUploadBo.isImage() || !fileConfig.isDeal()) {
+        if (!FileUtility.getInstance().isImageByContentType(attachUploadParam.getContentType()) || !fileConfig.isDeal()) {
             this.uploadEnd(status, pathKey, editor, response);
             return;
         }
-
         UploadPostProcessStrategy uploadPostProcessStrategy = ApplicationContext.getContainer().getBean("uploadPostProcessStrategy");
-        uploadPostProcessStrategy.uploadPostProcessing(physicalFullPath, attachUploadBo, fileConfig);
+        uploadPostProcessStrategy.uploadPostProcessing(physicalFullPath, attachUploadParam, fileConfig);
         this.uploadEnd(status, pathKey, editor, response);
     }
 
     private void uploadEnd(UploadingProgress status, String pathKey, String editor, HttpServletResponse response) {
         logger.info("upload end, reading length {}", status.getReadLength());
         status.setReadLength(status
-            .getContentLength());
-        response.setCharacterEncoding(Constant.CHARSET_UTF_8);
+                .getContentLength());
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         try {
             PrintWriter out = response.getWriter();
             initUploadHtml(out, pathKey, status, editor);
             out.flush();
             out.close();
-        } catch (IOException ignore) {
+        } catch (IOException e) {
+            logger.error("upload end io error", e);
         }
     }
 
@@ -303,6 +295,7 @@ public class FileUpload extends HttpServlet {
         if (status.getContentLength() == null || status.getReadLength() == null) {
             return;
         }
+        this.configAssemble.assemble(status);
         this.expirableStatusCache.continueKey(serialNumber);
         out.print(String.format("$.file.progressCallback(%s)", JsonFactory.getProvider().toString(status)));
     }
@@ -317,19 +310,21 @@ public class FileUpload extends HttpServlet {
         out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         out.println("<html>");
         out.println("<head><title>文件上传 -"
-            + ConfigUtility.getLanguageValue(ConfigKeyLanguage.WEBSITE_NAME,
-            ConfigUtility.getValue(Config.LANGUAGE)) + "</title>");
+                + ConfigUtility.getLanguageValue(ConfigKeyLanguage.WEBSITE_NAME,
+                ConfigUtility.getValue(Config.LANGUAGE)) + "</title>");
         out.println("<script type=\"text/javascript\">");
         //跨域必须两端都加
-        out.println(String.format("window.onload=function(){document.domain=window.location.host.substr(window.location.host.indexOf('.')+1);if(!parent.$){return;}if(parent.$.file.uploadCallBack){parent.$.file.uploadCallBack(%s,%s,%s);}}", json.toString(progress),
-            "null".equals(editor) ? "null" : "parent." + editor, json.toString(fileConfig.getSize())));
+        out.println(String.format("window.onload=function(){document.domain=window.location.host.substr(window.location.host.indexOf('.')+1);if(!parent.$){return;}if(parent.$.file.uploadCallBack){parent.$.file.uploadCallBack(%s,%s,%s);}}",
+                json.toString(progress),
+                ("null".equals(editor) || editor == null) ? "null" : "parent." + editor,
+                json.toString(fileConfig.getSize())));
         out.println("</script>");
         out.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
         out.println("</head>");
         out.println("<body style='margin:0px;padding:0px;height:25px;'>");
         out.println("<form action=\"file-upload\" method=\"post\" enctype=\"multipart/form-data\" target=\"_self\">");
         out.println("<input type=\"hidden\" id=\"fileInfo\" name=\"fileInfo\" value=\""
-            + fileInfo + "\" />");
+                + fileInfo + "\" />");
         out.println("<input style=\"cursor:pointer;width:200px;\" type=\"file\" id=\"file_upload\" name=\"file_upload\"");
         out.println(String.format(" onchange=\"parent.$.file.validateUploadFile(this,'%s',%s);\" />", pathKey, ("null".equals(editor) ? "" : "parent." + editor)));
         out.println("</form>");
@@ -351,11 +346,11 @@ public class FileUpload extends HttpServlet {
     public AttachUploadParam assembleFileInfo(HttpServletRequest request) throws IOException {
         UploadingProgress status = new UploadingProgress();
         ServletInputStream servletInputStream = request.getInputStream();
-        byte[] buffer = new byte[1024 * 1024];
+        byte[] buffer = new byte[1024];
         int readLength = 0;
         for (int i = 0; i < 3; i++) {
             servletInputStream
-                .readLine(buffer, 0, buffer.length);
+                    .readLine(buffer, 0, buffer.length);
         }
         readLength = servletInputStream.readLine(buffer, 0, buffer.length);
         String fileInfo = new String(buffer, 0, readLength - 2, StandardCharsets.UTF_8);
@@ -366,69 +361,12 @@ public class FileUpload extends HttpServlet {
         status.setReadLength((long) readLength);
         status.setContentLength((long) request.getContentLength());
         this.expirableStatusCache.put(fileSerialNumber, status);
-        AttachUploadParam attachUploadBo = new AttachUploadParam();
-        attachUploadBo.setFileSerialNumber(fileSerialNumber);
-        attachUploadBo.setPathKey(pathKey);
-        attachUploadBo.setEditor(editor);
-        attachUploadBo.setContentType(status.getContentType());
-        attachUploadBo.setContentLength(status.getContentLength());
-        return attachUploadBo;
-    }
-
-    public String assembleFileName(AttachUploadParam uploadBo, FileConfig fileConfig,
-        LoginUser loginToken) {
-        // 文件web路径
-        String fileWebUrl = fileConfig.getPath();
-        UploadingProgress uploadingProgress = this.expirableStatusCache.get(uploadBo.getFileSerialNumber());
-        FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(
-            uploadBo.getClientFileName());
-        String fileExtension = fileNameProperty.getExtension();
-        if (fileWebUrl.equals("$ShuffleFileId")) {
-            try {
-                String fileId = this.attachService.generateFileId(uploadBo);
-                // 物理路径
-                String physicalPath = FileUtility.getInstance()
-                    .getShufflePath(
-                        fileId, fileExtension
-                        , false,
-                        SIZE.ORIGIN);
-
-                // web前台返回路径
-                uploadingProgress.setFileUrl(FileUtility.getInstance().getShufflePath(
-                    fileId, fileExtension, true, SIZE.BIG));
-                return physicalPath;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        String currentTime = System.currentTimeMillis() + "";
-        fileWebUrl = fileWebUrl
-            .replace("$datetime", currentTime)
-            .replace(
-                "$userId",
-                loginToken.getUserId().toString())
-            .replace(
-                "$fileName",
-                fileNameProperty.getFullFileName())
-            .replace("$uuid", uploadBo.getFileSerialNumber())
-            .replace("$extension", fileExtension);
-
-        String physicalFullPath = fileWebUrl;
-
-        String resource = ConfigUtility.getValue(Config.RESOURCE);
-        String upload = ConfigUtility.getValue(Config.UPLOAD);
-        if (resource.split(Symbol.SLASH).length == 4) {
-            resource = resource.substring(resource.lastIndexOf("/"));
-        }
-        fileWebUrl = fileWebUrl.replace(
-            ConfigUtility.getValue(Config.RESOURCE_PHYSICAL_PATH),
-            resource);
-
-        fileWebUrl = fileWebUrl.replace(
-            ConfigUtility.getValue(Config.UPLOAD_PHYSICAL_PATH),
-            upload);
-        uploadingProgress.setFileUrl(fileWebUrl);
-        return physicalFullPath;
+        AttachUploadParam attachUploadParam = new AttachUploadParam();
+        attachUploadParam.setSerialNumber(fileSerialNumber);
+        attachUploadParam.setPathKey(pathKey);
+        attachUploadParam.setEditor(editor);
+        attachUploadParam.setContentType(status.getContentType());
+        attachUploadParam.setContentLength(status.getContentLength());
+        return attachUploadParam;
     }
 }

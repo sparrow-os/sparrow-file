@@ -1,10 +1,13 @@
 package com.sparrow.file.assemble;
 
+import com.sparrow.file.UploadingProgress;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.enums.UploadDealType;
 import com.sparrow.protocol.Size;
 import com.sparrow.utility.ConfigUtility;
+import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
+
 import javax.inject.Named;
 
 /**
@@ -46,5 +49,10 @@ public class FileConfigAssemble {
             default:
         }
         return fileConfig;
+    }
+
+    public void assemble(UploadingProgress progress) {
+        progress.setHumanReadableContentLength(FileUtility.getInstance().getHumanReadableFileLength(progress.getContentLength()));
+        progress.setHumanReadableReadLength(FileUtility.getInstance().getHumanReadableFileLength(progress.getReadLength()));
     }
 }

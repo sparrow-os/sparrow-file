@@ -2,6 +2,7 @@ package com.sparrow.file.servlet;
 
 import com.sparrow.constant.Config;
 import com.sparrow.constant.Regex;
+import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.utils.ImageUtility;
 import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
@@ -101,7 +102,7 @@ public class Thumbnail extends HttpServlet{
                     String sourceFile = rootPath + filePath;
                     File f = new File(sourceFile);
                     if (!f.exists()) {
-                        sourceFile = rootPath + com.sparrow.constant.File.SIZE.ORIGIN + filePath;
+                        sourceFile = rootPath + FileConstant.SIZE.ORIGIN + filePath;
                     }
                     ImageUtility.makeThumbnail(sourceFile, resp.getOutputStream(), width, height, currentWatermark, true);
                     return;

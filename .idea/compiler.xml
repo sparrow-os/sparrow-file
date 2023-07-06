@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="file-protocol" />
         <module name="file-dao-api" />
+        <module name="file-main-spring-boot" />
         <module name="file-test" />
         <module name="file-gateway" />
         <module name="file-service" />
@@ -15,15 +16,5 @@
         <module name="file-api" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="file-api" target="1.8" />
-      <module name="file-dao-api" target="1.8" />
-      <module name="file-gateway" target="1.8" />
-      <module name="file-protocol" target="1.8" />
-      <module name="file-service" target="1.8" />
-      <module name="file-sparrow-dao" target="1.8" />
-      <module name="file-test" target="1.8" />
-      <module name="sparrow-file" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
 </project>
