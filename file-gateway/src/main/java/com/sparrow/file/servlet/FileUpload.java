@@ -154,11 +154,6 @@ public class FileUpload extends HttpServlet {
             servletInputStream = request.getInputStream();
             while ((readLength = servletInputStream.readLine(buffer,
                     0, buffer.length)) != -1) {
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 status.setReadLength(status.getReadLength()
                         + readLength);
                 readString = new String(buffer, 0, readLength,
