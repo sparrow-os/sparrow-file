@@ -75,14 +75,13 @@ public class FileUpload extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-
-        PrintWriter out = response.getWriter();
-        //out.write(request.getServerName());
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        //设置服务器端编码
+        //https://articles.zsxq.com/id_sfemnfjowaaw.html
+        response.setCharacterEncoding("UTF-8");
         String fileSerialNumber = request.getParameter("file-serial-number");
         if (fileSerialNumber != null) {
             response.setHeader("Content-Type", Constant.CONTENT_TYPE_JAVASCRIPT);
-            writeState(out, fileSerialNumber);
+            writeState(response.getWriter(), fileSerialNumber);
             return;
         }
 
@@ -91,8 +90,8 @@ public class FileUpload extends HttpServlet {
             return;
         }
 
+        PrintWriter out = response.getWriter();
         String editor = request.getParameter("editor");
-
         LoginUser loginToken = ThreadContext.getLoginToken();
         if (loginToken == null || User.VISITOR_ID.equals(loginToken.getUserId())) {
             initVisitorUploadHtml(out, pathKey, editor);
@@ -104,10 +103,21 @@ public class FileUpload extends HttpServlet {
     private void initVisitorUploadHtml(PrintWriter out, String pathKey, String editor) {
         String dialogLoginUrl = ConfigUtility.getValue(Config.LOGIN_TYPE_KEY
                 .get(LoginType.DIALOG_LOGIN))
-                + "?option=upload&parameter=" + pathKey + "&editor=" + editor;
+                + "?callback-ns=file&parameter=" + pathKey + "&editor=" + editor;
+
+        out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<meta charset=\"utf-8\">");
+        out.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">");
+        out.println("</head>");
+        out.println("<body>");
+
         out.write("<script type=\"text/javascript\">document.domain='" + ConfigUtility.getValue(Config.ROOT_DOMAIN) + "'</script>");
         out.write("<a href=\"javascript:parent.$.window({showHead:false,url:'"
                 + dialogLoginUrl + "&shortRegister=false'});\">" + ConfigUtility.getLanguageValue(ConfigKeyLanguage.CONTROL_TEXT_LOGIN) + "</a>");
+        out.println("</body>");
+        out.println("</html>");
     }
 
     @Override
