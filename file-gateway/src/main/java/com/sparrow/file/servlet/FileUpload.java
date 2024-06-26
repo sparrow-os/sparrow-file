@@ -93,7 +93,7 @@ public class FileUpload extends HttpServlet {
         PrintWriter out = response.getWriter();
         String editor = request.getParameter("editor");
         LoginUser loginToken = ThreadContext.getLoginToken();
-        if (loginToken == null || User.VISITOR_ID.equals(loginToken.getUserId())) {
+        if (loginToken == null || LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
             initVisitorUploadHtml(out, pathKey, editor);
             return;
         }
@@ -123,7 +123,7 @@ public class FileUpload extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
         LoginUser loginToken = ThreadContext.getLoginToken();
-        if (User.VISITOR_ID.equals(loginToken.getUserId())) {
+        if (LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
             logger.error("current user is not login");
             return;
         }
