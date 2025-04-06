@@ -1,5 +1,7 @@
 package com.sparrow.file.support.utils;
 
+import com.sparrow.container.ConfigReader;
+import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.exception.Asserts;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.dto.AttachDTO;
@@ -10,13 +12,12 @@ import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.LoginUser;
 import com.sparrow.protocol.constant.magic.Digit;
-import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
 
 public class AttachUrlUtility {
     public static String getPhysicalFilePath(AttachUploadParam attachUploadParam,
-                                          FileConfig fileConfig,
-                                          LoginUser loginUser) {
+                                             FileConfig fileConfig,
+                                             LoginUser loginUser) {
         FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(
                 attachUploadParam.getClientFileName());
         String fileExtension = fileNameProperty.getExtension();
@@ -36,8 +37,6 @@ public class AttachUrlUtility {
                 .replace("$extension", fileExtension);
         return physicalFullPath;
     }
-
-
 
 
     /**
@@ -63,8 +62,10 @@ public class AttachUrlUtility {
         String path;
         Asserts.isTrue(!isImage, FileError.UPLOAD_FILE_TYPE_ERROR);
 
+        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
+
         //img_shuffle_dir_0=file://ip1:port/sparrow/img0 参数在key中定义
-        String imgShufflerDir = ConfigUtility.getValue(PathConfig.IMG_SHUFFLER_DIR + "_" + remaining);
+        String imgShufflerDir = configReader.getValue(PathConfig.IMG_SHUFFLER_DIR + "_" + remaining);
         path = imgShufflerDir
                 + "/%1$s/%2$s/%3$s/%4$s%5$s";
         return String.format(path, size, remaining2, remaining1,

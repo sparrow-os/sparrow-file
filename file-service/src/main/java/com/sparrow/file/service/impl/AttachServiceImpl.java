@@ -1,6 +1,6 @@
 package com.sparrow.file.service.impl;
 
-import com.sparrow.constant.Config;
+import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.AttachAssemble;
 import com.sparrow.file.dao.AttachDAO;
@@ -17,7 +17,7 @@ import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.constant.Extension;
 import com.sparrow.protocol.constant.SparrowError;
-import com.sparrow.utility.ConfigUtility;
+import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.HttpClient;
 import com.sparrow.utility.StringUtility;
@@ -132,8 +132,8 @@ public class AttachServiceImpl implements AttachService {
                 FileConstant.SIZE.SMALL);
 
         try {
-            String logoWaterFile = ConfigUtility
-                    .getValue(Config.RESOURCE_PHYSICAL_PATH)
+           WebConfigReader webConfigReader=  ApplicationContext.getContainer().getBean(WebConfigReader.class);
+           String logoWaterFile = webConfigReader.getPhysicalResource()
                     + "/system/images/water.png";
             ImageUtility.makeThumbnail(originImagePath, bigPath, 480, -1,
                     logoWaterFile, false);

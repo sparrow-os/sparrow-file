@@ -1,13 +1,12 @@
 package com.sparrow.file.servlet;
 
-import com.sparrow.constant.SysObjectName;
 import com.sparrow.container.Container;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.dto.AttachDTO;
-import com.sparrow.file.support.utils.AttachUrlUtility;
 import com.sparrow.protocol.LoginUser;
 import com.sparrow.support.Authenticator;
+import com.sparrow.support.AuthenticatorConfigReader;
 import com.sparrow.support.Authorizer;
 import com.sparrow.support.web.CookieUtility;
 import com.sparrow.support.web.ServletUtility;
@@ -60,12 +59,13 @@ public class FileDownLoad extends HttpServlet {
         String fileId = request.getParameter("fileId");
 
         Authenticator authenticator = ApplicationContext.getContainer().getBean(
-                SysObjectName.AUTHENTICATOR_SERVICE);
+                Authenticator.class);
 
-        Authorizer authorizer = ApplicationContext.getContainer().getBean(SysObjectName.AUTHORIZER_SERVICE);
+        Authorizer authorizer = ApplicationContext.getContainer().getBean(Authorizer.class);
         boolean accessible = false;
         try {
-            String permission = this.cookieUtility.getPermission(request);
+            AuthenticatorConfigReader configReader = ApplicationContext.getContainer().getBean(AuthenticatorConfigReader.class);
+            String permission = this.cookieUtility.getPermission(request,configReader.getTokenKey());
             String deviceId = ServletUtility.getInstance().getDeviceId(request);
             LoginUser loginToken = authenticator.authenticate(permission, deviceId);
             String actionKey = ServletUtility.getInstance().getActionKey(request);

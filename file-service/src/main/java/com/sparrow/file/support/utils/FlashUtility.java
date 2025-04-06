@@ -45,15 +45,15 @@ public class FlashUtility {
 
     // http://player.youku.com/player.php/Type/Folder/Fid/17354925/Ob/1/Pt/0/sid/XMzgwODczNDY4/v.swf
     private final Pattern youkuPatter = Pattern.compile(this.youku,
-            Regex.OPTION);
+            Regex.OPTION_MULTILINE);
 
     // http://share.vrs.sohu.com/637677/v.swf&autoplay=false
-    private final Pattern sohuPatter = Pattern.compile(this.sohu, Regex.OPTION);
+    private final Pattern sohuPatter = Pattern.compile(this.sohu, Regex.OPTION_MULTILINE);
 
     private final Pattern youkuPic = Pattern.compile("\"logo\":\"(.*?)\"",
-            Regex.OPTION);
+            Regex.OPTION_MULTILINE);
     private final Pattern sohuPic = Pattern.compile("\"coverImg\":\"(.*?)\"",
-            Regex.OPTION);
+            Regex.OPTION_MULTILINE);
 
     public String getThumbnailUrl(String swfSrc) {
         // flash API

@@ -1,14 +1,12 @@
 package com.sparrow.file.servlet;
 
-import com.sparrow.constant.Config;
 import com.sparrow.constant.ConfigKeyLanguage;
-import com.sparrow.constant.User;
+import com.sparrow.container.ConfigReader;
 import com.sparrow.container.Container;
 import com.sparrow.core.cache.ExpirableCache;
 import com.sparrow.core.cache.SoftExpirableCache;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.core.spi.JsonFactory;
-import com.sparrow.enums.LoginType;
 import com.sparrow.file.UploadingProgress;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.FileConfigAssemble;
@@ -27,7 +25,6 @@ import com.sparrow.protocol.LoginUser;
 import com.sparrow.protocol.ThreadContext;
 import com.sparrow.protocol.constant.Constant;
 import com.sparrow.protocol.constant.magic.Symbol;
-import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
 import org.slf4j.Logger;
@@ -101,10 +98,6 @@ public class FileUpload extends HttpServlet {
     }
 
     private void initVisitorUploadHtml(PrintWriter out, String pathKey, String editor) {
-        String dialogLoginUrl = ConfigUtility.getValue(Config.LOGIN_TYPE_KEY
-                .get(LoginType.DIALOG_LOGIN))
-                + "?callback-ns=file&parameter=" + pathKey + "&editor=" + editor;
-
         out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         out.println("<html>");
         out.println("<head>");
@@ -112,10 +105,9 @@ public class FileUpload extends HttpServlet {
         out.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">");
         out.println("</head>");
         out.println("<body>");
-
-        out.write("<script type=\"text/javascript\">document.domain='" + ConfigUtility.getValue(Config.ROOT_DOMAIN) + "'</script>");
-        out.write("<a href=\"javascript:parent.$.window({showHead:false,url:'"
-                + dialogLoginUrl + "&shortRegister=false'});\">" + ConfigUtility.getLanguageValue(ConfigKeyLanguage.CONTROL_TEXT_LOGIN) + "</a>");
+        out.println("<div>");
+        out.println("客户端实现上传功能，请使用HTML5的File API上传文件");
+        out.println("</div>");
         out.println("</body>");
         out.println("</html>");
     }
@@ -160,6 +152,7 @@ public class FileUpload extends HttpServlet {
         attachUploadParam.setCreateUserId(loginToken.getUserId());
         FileOutputStream fileOutputStream = null;
         ServletInputStream servletInputStream = null;
+        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
         try {
             servletInputStream = request.getInputStream();
             while ((readLength = servletInputStream.readLine(buffer,
@@ -196,7 +189,7 @@ public class FileUpload extends HttpServlet {
                             .substring(fileName.lastIndexOf('\\') + 1));
                     status.setClientFileName(attachUploadParam.getClientFileName());
 
-                    String rightFileType = ConfigUtility
+                    String rightFileType = configReader
                             .getValue(FileConstant.RIGHT_TYPE
                                     + "_" + pathKey.toLowerCase());
                     if (rightFileType != null
@@ -307,6 +300,7 @@ public class FileUpload extends HttpServlet {
 
     private void initUploadHtml(PrintWriter out, String pathKey, UploadingProgress progress, String editor) {
         FileConfig fileConfig = this.configAssemble.assemble(pathKey);
+        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
         Json json = JsonFactory.getProvider();
         // 这里的newUUID必须 但是文件上传成功后一定要重新加载控件
         String serialNumber = StringUtility.newUuid();
@@ -315,8 +309,7 @@ public class FileUpload extends HttpServlet {
         out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         out.println("<html>");
         out.println("<head><title>文件上传 -"
-                + ConfigUtility.getLanguageValue(ConfigKeyLanguage.WEBSITE_NAME,
-                ConfigUtility.getValue(Config.LANGUAGE)) + "</title>");
+                + configReader.getI18nValue(ConfigKeyLanguage.WEBSITE_NAME) + "</title>");
         out.println("<script type=\"text/javascript\">");
         //跨域必须两端都加
         out.println(String.format("window.onload=function(){document.domain=window.location.host.substr(window.location.host.indexOf('.')+1);if(!parent.$){return;}if(parent.$.file.uploadCallBack){parent.$.file.uploadCallBack(%s,%s,%s);}}",

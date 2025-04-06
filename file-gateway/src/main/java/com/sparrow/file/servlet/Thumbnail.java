@@ -1,13 +1,20 @@
 package com.sparrow.file.servlet;
 
-import com.sparrow.constant.Config;
 import com.sparrow.constant.Regex;
+import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.utils.ImageUtility;
-import com.sparrow.utility.ConfigUtility;
+import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.FileUtility;
+import com.sparrow.utility.PropertyUtility;
 import com.sparrow.utility.RegexUtility;
 import com.sparrow.utility.StringUtility;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,11 +23,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * http://thumbnail.sparrowzoo.com/thumbnail?domain=img1_sparrowzoo_net&url=/ios_big_thread/6/361/6361.png
@@ -45,7 +47,7 @@ public class Thumbnail extends HttpServlet{
         if (StringUtility.isNullOrEmpty(thumbnailSizePath)) {
             thumbnailSizePath = "/thumbnail";
         }
-        pathConfig = ConfigUtility.loadFromClassesPath(rootPath);
+        pathConfig = PropertyUtility.loadFromClassesPath(rootPath);
         try {
             File file = new File(Thumbnail.class.getResource(thumbnailSizePath).toURI());
             if (!file.isDirectory()) {
@@ -57,7 +59,7 @@ public class Thumbnail extends HttpServlet{
             }
             for (File configFile : fileLists) {
                 try {
-                    Map<String, String> configMap = ConfigUtility.load(new FileInputStream(configFile));
+                    Map<String, String> configMap = PropertyUtility.load(new FileInputStream(configFile));
                     thumbnailSize.put(FileUtility.getInstance().getFileNameProperty(configFile.getName()).getName(), configMap);
                 } catch (FileNotFoundException ignore) {
                 }
@@ -74,11 +76,13 @@ public class Thumbnail extends HttpServlet{
             url = "/" + url;
         }
 
+        WebConfigReader webConfigReader= ApplicationContext.getContainer().getBean(WebConfigReader.class);
+
         List<String> config = RegexUtility.groups(url, Regex.IMG_URL_RULE);
         String rootPath = pathConfig.get(domain);
-        String waterMark = ConfigUtility
-                .getValue(Config.RESOURCE_PHYSICAL_PATH)
-                + ConfigUtility.getValue(Config.WATER_MARK);
+
+        String waterMark = webConfigReader.getPhysicalResource()
+                + webConfigReader.getWaterMark();
 
         Map<String, String> thumbnailSizeConfig = thumbnailSize.get(domain);
         if (thumbnailSizeConfig != null) {
