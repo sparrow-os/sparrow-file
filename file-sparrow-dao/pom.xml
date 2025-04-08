@@ -25,10 +25,6 @@
         </dependency>
         <dependency>
             <groupId>com.sparrowzoo</groupId>
-            <artifactId>sparrow-data-source</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sparrowzoo</groupId>
             <artifactId>sparrow-orm</artifactId>
         </dependency>
     </dependencies>
