@@ -1,10 +1,11 @@
 package com.sparrow.file.assemble;
 
+import com.sparrow.container.ConfigReader;
+import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.UploadingProgress;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.enums.UploadDealType;
 import com.sparrow.protocol.Size;
-import com.sparrow.utility.ConfigUtility;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
 
@@ -18,7 +19,8 @@ public class FileConfigAssemble {
     public FileConfig assemble(String key) {
         FileConfig fileConfig = new FileConfig();
         fileConfig.setKey(key);
-        String config = ConfigUtility.getValue("attach_" + key);
+        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
+        String config = configReader.getValue("attach_" + key);
         if (StringUtility.isNullOrEmpty(config)) {
             throw new RuntimeException("key attach_" + key + " not found");
         }

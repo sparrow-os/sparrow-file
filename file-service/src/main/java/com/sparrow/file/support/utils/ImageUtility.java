@@ -379,7 +379,7 @@ public class ImageUtility {
         List<TypeConverter> fieldList = ApplicationContext.getContainer().getFieldList(entity.getClass());
         MethodAccessor methodAccessor = ApplicationContext.getContainer().getProxyBean(entity.getClass());
         for (TypeConverter type : fieldList) {
-            Object value = methodAccessor.get(entity, type.getName());
+            Object value = methodAccessor.get(entity, type.getPropertyName());
             if (!(value instanceof String)) {
                 continue;
             }
