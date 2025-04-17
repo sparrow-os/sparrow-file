@@ -3,6 +3,7 @@ package com.sparrow.file.service.impl;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.AttachAssemble;
+import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.dao.AttachDAO;
 import com.sparrow.file.dto.AttachDTO;
 import com.sparrow.file.param.AttachUploadParam;
@@ -10,7 +11,6 @@ import com.sparrow.file.param.EnableAttachParam;
 import com.sparrow.file.param.ImageCropperParam;
 import com.sparrow.file.po.Attach;
 import com.sparrow.file.support.constant.FileConstant;
-import com.sparrow.file.support.utils.AttachUrlUtility;
 import com.sparrow.file.support.utils.ImageUtility;
 import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import com.sparrow.io.file.FileNameProperty;
@@ -59,7 +59,7 @@ public class AttachServiceImpl implements AttachService {
         Boolean isImage = fileNameProperty.isImage();
         boolean result;
         if (isImage) {
-            String imageFullPath = AttachUrlUtility.getShuffleImagePhysicalPath(attachDTO, FileConstant.SIZE.ORIGIN);
+            String imageFullPath = new FileConfig().getShuffleImagePhysicalPath(attachDTO, FileConstant.SIZE.ORIGIN);
             File origin = new File(imageFullPath);
             if (origin.exists()) {
                 result = origin.delete();
@@ -118,7 +118,7 @@ public class AttachServiceImpl implements AttachService {
             logger.warn("image url is wrong {}", imageUrl);
             extension = Extension.PNG;
         }
-        String originImagePath = AttachUrlUtility.getShuffleImagePhysicalPath(attachDTO, FileConstant.SIZE.ORIGIN);
+        String originImagePath = FileConfig.getShuffleImagePhysicalPath(attachDTO, FileConstant.SIZE.ORIGIN);
         // 保存下载的原图
         HttpClient.downloadFile(imageUrl, originImagePath);
 

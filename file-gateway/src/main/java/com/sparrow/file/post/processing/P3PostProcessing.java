@@ -1,18 +1,15 @@
 package com.sparrow.file.post.processing;
 
-import com.sparrow.constant.Config;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.utils.ImageUtility;
-
-import javax.inject.Named;
-
 import com.sparrow.support.web.WebConfigReader;
-import javafx.application.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Named;
 
 @Named
 public class P3PostProcessing implements UploadPostProcessing {

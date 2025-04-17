@@ -6,6 +6,7 @@ import com.sparrow.file.UploadingProgress;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.enums.UploadDealType;
 import com.sparrow.protocol.Size;
+import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
 
@@ -16,10 +17,12 @@ import javax.inject.Named;
  */
 @Named
 public class FileConfigAssemble {
+
     public FileConfig assemble(String key) {
+        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
+        WebConfigReader webConfigReader = ApplicationContext.getContainer().getBean(WebConfigReader.class);
         FileConfig fileConfig = new FileConfig();
         fileConfig.setKey(key);
-        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
         String config = configReader.getValue("attach_" + key);
         if (StringUtility.isNullOrEmpty(config)) {
             throw new RuntimeException("key attach_" + key + " not found");
@@ -27,6 +30,7 @@ public class FileConfigAssemble {
         String[] configArray = config.split("\\|");
         fileConfig.setPath(configArray[0]);
         fileConfig.setLength(Integer.parseInt(configArray[1]));
+        fileConfig.setUploadPhysicalPath(webConfigReader.getPhysicalUpload());
 
         if (configArray.length <= 2) {
             return fileConfig;

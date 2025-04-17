@@ -5,11 +5,13 @@ import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.support.constant.PathConfig;
 import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.StringUtility;
+import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PathUrlConverter {
+    @Data
     static class PhysicalPathWebUrlPair {
         PhysicalPathWebUrlPair(String physicalPath, String webUrl) {
             this.physicalPath = physicalPath;
@@ -18,14 +20,6 @@ public class PathUrlConverter {
 
         private String physicalPath;
         private String webUrl;
-
-        public String getPhysicalPath() {
-            return physicalPath;
-        }
-
-        public String getWebUrl() {
-            return webUrl;
-        }
     }
 
     private Map<String, String> physicalPathWebUrlMap = new HashMap<>();

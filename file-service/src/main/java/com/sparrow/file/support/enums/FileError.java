@@ -13,7 +13,7 @@ public enum FileError implements ErrorSupport {
     FILE_NOT_FOUND(false, FileModule.UPLOAD, "31", "file not found"),
     FILE_CAN_NOT_READ(false, FileModule.UPLOAD, "32", "file can't read"),
     UPLOAD_SRC_DESC_PATH_REPEAT(false, FileModule.UPLOAD, "33", "src desc path repeat"),
-
+    DIR_CREATE_ERROR(false, FileModule.UPLOAD, "34", "dir create error"),
     ;
     private boolean system;
     private ModuleSupport module;

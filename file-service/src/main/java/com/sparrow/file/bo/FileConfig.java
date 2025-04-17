@@ -1,8 +1,22 @@
 package com.sparrow.file.bo;
 
+import com.sparrow.container.ConfigReader;
+import com.sparrow.core.spi.ApplicationContext;
+import com.sparrow.exception.Asserts;
+import com.sparrow.file.dto.AttachDTO;
 import com.sparrow.file.enums.UploadDealType;
+import com.sparrow.file.param.AttachUploadParam;
+import com.sparrow.file.support.constant.PathConfig;
+import com.sparrow.file.support.enums.FileError;
+import com.sparrow.io.file.FileNameProperty;
+import com.sparrow.protocol.BusinessException;
+import com.sparrow.protocol.LoginUser;
 import com.sparrow.protocol.Size;
+import com.sparrow.protocol.constant.magic.Digit;
+import com.sparrow.utility.FileUtility;
+import lombok.Data;
 
+@Data
 public class FileConfig {
     private String key;
     private String path;
@@ -12,80 +26,67 @@ public class FileConfig {
     private Size bigSize;
     private Size middleSize;
     private Size smallSize;
-    /**
-     * 是否需要处理
-     */
     private boolean isDeal = false;
+    private String uploadPhysicalPath;
 
-    public boolean isDeal() {
-        return isDeal;
+    public boolean isShuffle() {
+        return this.path.equals("$ShuffleFileId");
     }
 
-    public String getPath() {
-        return path;
+
+    public String getPhysicalFilePath(AttachUploadParam attachUploadParam, LoginUser loginUser) {
+        FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(
+                attachUploadParam.getClientFileName());
+        String fileExtension = fileNameProperty.getExtension();
+
+        // 文件web路径
+        String physicalFullPath = this.getPath();
+        long currentTime = System.currentTimeMillis();
+        physicalFullPath = physicalFullPath
+                .replace("$physical_upload", this.uploadPhysicalPath)
+                .replace("$datetime", String.valueOf(currentTime))
+                .replace(
+                        "$userId",
+                        loginUser.getUserId().toString())
+                .replace(
+                        "$fileName",
+                        fileNameProperty.getFullFileName())
+                .replace("$serialNumber", attachUploadParam.getSerialNumber())
+                .replace("$extension", fileExtension);
+        return physicalFullPath;
     }
 
-    public int getLength() {
-        return length;
-    }
 
-    public UploadDealType getType() {
-        return type;
-    }
+    /**
+     * 通过一数字ID获取文件打散路径
+     *
+     * @param attach
+     * @param size
+     * @return
+     */
+    public static String getShuffleImagePhysicalPath(AttachDTO attach,
+                                                     String size) throws BusinessException {
 
-    public Size getSize() {
-        return size;
-    }
+        FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(
+                attach.getClientFileName());
+        String fileExtension = fileNameProperty.getExtension();
 
-    public Size getBigSize() {
-        return bigSize;
-    }
+        long id = attach.getId();
+        boolean isImage = FileUtility.getInstance().isImage(fileExtension);
+        long remaining = id % Digit.TWELVE;
+        long remaining1 = id % Digit.THOUSAND;
+        long div = id / Digit.THOUSAND;
+        long remaining2 = div % Digit.THOUSAND;
+        String path;
+        Asserts.isTrue(!isImage, FileError.UPLOAD_FILE_TYPE_ERROR);
 
-    public Size getMiddleSize() {
-        return middleSize;
-    }
+        ConfigReader configReader = ApplicationContext.getContainer().getBean(ConfigReader.class);
 
-    public Size getSmallSize() {
-        return smallSize;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public void setType(UploadDealType type) {
-        this.type = type;
-    }
-
-    public void setSize(Size size) {
-        this.size = size;
-    }
-
-    public void setBigSize(Size bigSize) {
-        this.bigSize = bigSize;
-    }
-
-    public void setMiddleSize(Size middleSize) {
-        this.middleSize = middleSize;
-    }
-
-    public void setSmallSize(Size smallSize) {
-        this.smallSize = smallSize;
-    }
-
-    public void setDeal(boolean deal) {
-        isDeal = deal;
+        //img_shuffle_dir_0=file://ip1:port/sparrow/img0 参数在key中定义
+        String imgShufflerDir = configReader.getValue(PathConfig.IMG_SHUFFLER_DIR + "_" + remaining);
+        path = imgShufflerDir
+                + "/%1$s/%2$s/%3$s/%4$s%5$s";
+        return String.format(path, size, remaining2, remaining1,
+                attach.getId(), fileExtension);
     }
 }

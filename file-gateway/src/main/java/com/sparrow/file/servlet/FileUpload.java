@@ -16,7 +16,6 @@ import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.post.processing.UploadPostProcessStrategy;
 import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.enums.FileError;
-import com.sparrow.file.support.utils.AttachUrlUtility;
 import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.json.Json;
@@ -220,11 +219,11 @@ public class FileUpload extends HttpServlet {
 
                     UploadingProgress uploadingProgress = this.expirableStatusCache.get(attachUploadParam.getSerialNumber());
 
-                    if (fileConfig.getPath().equals("$ShuffleFileId")) {
+                    if (fileConfig.isShuffle()) {
                         AttachDTO attach = this.attachService.generateFileId(attachUploadParam);
-                        physicalFullPath = AttachUrlUtility.getShuffleImagePhysicalPath(attach, FileConstant.SIZE.ORIGIN);
+                        physicalFullPath = FileConfig.getShuffleImagePhysicalPath(attach, FileConstant.SIZE.ORIGIN);
                     } else {
-                        physicalFullPath = AttachUrlUtility.getPhysicalFilePath(attachUploadParam, fileConfig, loginToken);
+                        physicalFullPath = fileConfig.getPhysicalFilePath(attachUploadParam, loginToken);
                     }
                     uploadingProgress.setFileUrl(this.pathUrlConverter.getWebUrlByPhysicalFileName(physicalFullPath));
                     FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(physicalFullPath);

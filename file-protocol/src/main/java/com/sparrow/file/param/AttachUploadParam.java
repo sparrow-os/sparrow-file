@@ -1,7 +1,8 @@
 package com.sparrow.file.param;
 
-public class AttachUploadParam {
+import java.util.UUID;
 
+public class AttachUploadParam {
     /**
      * 文件上传生成的序列号
      */
@@ -66,6 +67,9 @@ public class AttachUploadParam {
     }
 
     public String getSerialNumber() {
+        if (this.serialNumber == null) {
+            return UUID.randomUUID().toString();
+        }
         return serialNumber;
     }
 
