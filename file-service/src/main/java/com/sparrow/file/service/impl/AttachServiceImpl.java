@@ -56,7 +56,7 @@ public class AttachServiceImpl implements AttachService {
     public void deleteImageById(Long attachId) throws BusinessException {
         AttachDTO attachDTO = this.getAttach(attachId);
         FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(attachDTO.getClientFileName());
-        Boolean isImage = fileNameProperty.isImage();
+        Boolean isImage = fileNameProperty.getImage();
         boolean result;
         if (isImage) {
             String imageFullPath = new FileConfig().getShuffleImagePhysicalPath(attachDTO, FileConstant.SIZE.ORIGIN);
@@ -132,8 +132,8 @@ public class AttachServiceImpl implements AttachService {
                 FileConstant.SIZE.SMALL);
 
         try {
-           WebConfigReader webConfigReader=  ApplicationContext.getContainer().getBean(WebConfigReader.class);
-           String logoWaterFile = webConfigReader.getPhysicalResource()
+            WebConfigReader webConfigReader = ApplicationContext.getContainer().getBean(WebConfigReader.class);
+            String logoWaterFile = webConfigReader.getPhysicalResource()
                     + "/system/images/water.png";
             ImageUtility.makeThumbnail(originImagePath, bigPath, 480, -1,
                     logoWaterFile, false);

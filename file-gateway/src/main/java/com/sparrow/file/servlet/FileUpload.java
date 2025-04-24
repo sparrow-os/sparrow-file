@@ -363,7 +363,7 @@ public class FileUpload extends HttpServlet {
         attachUploadParam.setPathKey(pathKey);
         attachUploadParam.setEditor(editor);
         attachUploadParam.setContentType(status.getContentType());
-        attachUploadParam.setContentLength(status.getContentLength());
+        attachUploadParam.setContentLength(status.getContentLength().intValue());
         return attachUploadParam;
     }
 }

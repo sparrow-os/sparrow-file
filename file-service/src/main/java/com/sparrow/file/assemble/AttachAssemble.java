@@ -18,7 +18,7 @@ public class AttachAssemble {
         po.setCreateUserId(bo.getCreateUserId());
         po.setGmtCreate(System.currentTimeMillis());
         po.setDownloadTimes(0L);
-        po.setContentLength(bo.getContentLength());
+        po.setContentLength((long) bo.getContentLength());
         po.setContentType(bo.getContentType());
         return po;
     }
