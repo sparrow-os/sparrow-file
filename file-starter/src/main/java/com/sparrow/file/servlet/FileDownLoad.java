@@ -4,12 +4,7 @@ import com.sparrow.container.Container;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.dto.AttachDTO;
-import com.sparrow.protocol.LoginUser;
-import com.sparrow.support.Authenticator;
-import com.sparrow.support.AuthenticatorConfigReader;
-import com.sparrow.support.Authorizer;
 import com.sparrow.support.web.CookieUtility;
-import com.sparrow.support.web.ServletUtility;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
 
@@ -57,28 +52,6 @@ public class FileDownLoad extends HttpServlet {
         }
 
         String fileId = request.getParameter("fileId");
-
-        Authenticator authenticator = ApplicationContext.getContainer().getBean(
-                Authenticator.class);
-
-        Authorizer authorizer = ApplicationContext.getContainer().getBean(Authorizer.class);
-        boolean accessible = false;
-        try {
-            AuthenticatorConfigReader configReader = ApplicationContext.getContainer().getBean(AuthenticatorConfigReader.class);
-            String permission = this.cookieUtility.getPermission(request,configReader.getTokenKey());
-            String deviceId = ServletUtility.getInstance().getDeviceId(request);
-            LoginUser loginToken = authenticator.authenticate(permission, deviceId);
-            String actionKey = ServletUtility.getInstance().getActionKey(request);
-            accessible = authorizer.isPermitted(loginToken, actionKey);
-        } catch (Exception e2) {
-            response.getWriter().write("对不起！您无下载权限。");
-            return;
-        }
-        if (!accessible) {
-            response.getWriter().write("对不起！您无下载权限。");
-            return;
-        }
-
         AttachDTO attach;
         FileInputStream inStream = null;
         try {

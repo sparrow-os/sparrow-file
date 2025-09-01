@@ -1,5 +1,6 @@
 package com.sparrow.file.controller;
 
+import com.sparrow.context.SessionContext;
 import com.sparrow.exception.Asserts;
 import com.sparrow.file.api.AttachService;
 import com.sparrow.file.assemble.FileConfigAssemble;
@@ -13,7 +14,6 @@ import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.LoginUser;
-import com.sparrow.protocol.ThreadContext;
 import com.sparrow.spring.starter.config.SparrowConfig;
 import com.sparrow.utility.FileUtility;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +70,7 @@ public class FileController {
 
         try {
             FileConfig fileConfig = this.fileConfigAssemble.assemble(pathType);
-            LoginUser loginUser = ThreadContext.getLoginToken();
+            LoginUser loginUser = SessionContext.getLoginUser();
             AttachUploadParam attachUploadParam = new AttachUploadParam();
             attachUploadParam.setClientFileName(file.getOriginalFilename());
             attachUploadParam.setContentType(file.getContentType());
@@ -89,7 +89,7 @@ public class FileController {
     }
 
     private String getPhysicalFilePath(AttachUploadParam attachUploadParam, FileConfig fileConfig) throws BusinessException {
-        LoginUser loginUser = ThreadContext.getLoginToken();
+        LoginUser loginUser = SessionContext.getLoginUser();
         String physicalFullPath = null;
         if (fileConfig.isShuffle()) {
             AttachDTO attach = this.attachService.generateFileId(attachUploadParam);

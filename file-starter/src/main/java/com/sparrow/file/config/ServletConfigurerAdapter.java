@@ -3,18 +3,14 @@ package com.sparrow.file.config;
 import com.sparrow.file.servlet.FileDownLoad;
 import com.sparrow.file.servlet.FileUpload;
 import com.sparrow.file.support.utils.path.url.PathUrlConverter;
-import com.sparrow.support.web.ServletUtility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class ServletConfigurerAdapter implements WebMvcConfigurer {
-    private static Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
-
+@Slf4j
+public class ServletConfigurerAdapter {
     @Bean
     public PathUrlConverter pathUrlConverter() {
         return new PathUrlConverter();

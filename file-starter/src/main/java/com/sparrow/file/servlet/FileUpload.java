@@ -3,6 +3,7 @@ package com.sparrow.file.servlet;
 import com.sparrow.constant.ConfigKeyLanguage;
 import com.sparrow.container.ConfigReader;
 import com.sparrow.container.Container;
+import com.sparrow.context.SessionContext;
 import com.sparrow.core.cache.ExpirableCache;
 import com.sparrow.core.cache.SoftExpirableCache;
 import com.sparrow.core.spi.ApplicationContext;
@@ -21,7 +22,6 @@ import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.json.Json;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.LoginUser;
-import com.sparrow.protocol.ThreadContext;
 import com.sparrow.protocol.constant.Constant;
 import com.sparrow.protocol.constant.magic.Symbol;
 import com.sparrow.utility.FileUtility;
@@ -88,7 +88,7 @@ public class FileUpload extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         String editor = request.getParameter("editor");
-        LoginUser loginToken = ThreadContext.getLoginToken();
+        LoginUser loginToken = SessionContext.getLoginUser();
         if (loginToken == null || LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
             initVisitorUploadHtml(out, pathKey, editor);
             return;
@@ -113,7 +113,7 @@ public class FileUpload extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        LoginUser loginToken = ThreadContext.getLoginToken();
+        LoginUser loginToken = SessionContext.getLoginUser();
         if (LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
             logger.error("current user is not login");
             return;

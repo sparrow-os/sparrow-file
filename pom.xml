@@ -14,7 +14,7 @@
         <module>file-service</module>
         <module>file-test</module>
         <module>file-protocol</module>
-        <module>file-gateway</module>
+        <module>file-starter</module>
         <module>file-main-spring-boot</module>
     </modules>
     <packaging>pom</packaging>

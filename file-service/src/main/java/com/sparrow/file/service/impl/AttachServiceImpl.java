@@ -21,8 +21,7 @@ import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.HttpClient;
 import com.sparrow.utility.StringUtility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,8 +30,12 @@ import java.io.File;
 import java.io.IOException;
 
 @Named("attachService")
+@Slf4j
 public class AttachServiceImpl implements AttachService {
-    private static Logger logger = LoggerFactory.getLogger(AttachServiceImpl.class);
+    public AttachServiceImpl() {
+        log.info("init AttachService");
+    }
+
     @Inject
     private AttachAssemble attachAssemble;
 
@@ -63,28 +66,28 @@ public class AttachServiceImpl implements AttachService {
             File origin = new File(imageFullPath);
             if (origin.exists()) {
                 result = origin.delete();
-                logger.info("deleted file {},result:{}", imageFullPath, result);
+                log.info("deleted file {},result:{}", imageFullPath, result);
             }
 
             File big = new File(imageFullPath.replace(FileConstant.SIZE.ORIGIN,
                     FileConstant.SIZE.BIG));
             if (big.exists()) {
                 result = big.delete();
-                logger.info("deleted file {},result:{}", big.getAbsolutePath(), result);
+                log.info("deleted file {},result:{}", big.getAbsolutePath(), result);
             }
 
             File middle = new File(imageFullPath.replace(FileConstant.SIZE.ORIGIN,
                     FileConstant.SIZE.MIDDLE));
             if (middle.exists()) {
                 result = middle.delete();
-                logger.info("deleted file {},result:{}", middle.getAbsolutePath(), result);
+                log.info("deleted file {},result:{}", middle.getAbsolutePath(), result);
             }
 
             File small = new File(imageFullPath.replace(FileConstant.SIZE.ORIGIN,
                     FileConstant.SIZE.SMALL));
             if (small.exists()) {
                 result = small.delete();
-                logger.info("deleted file {},result:{}", imageFullPath, result);
+                log.info("deleted file {},result:{}", imageFullPath, result);
             }
         }
     }
@@ -100,7 +103,7 @@ public class AttachServiceImpl implements AttachService {
         try {
             this.attachDao.addDownLoadTimes(fileId);
         } catch (Exception e) {
-            logger.error("add attach download times", e);
+            log.error("add attach download times", e);
             throw new BusinessException(SparrowError.GLOBAL_DB_ADD_ERROR);
         }
     }
@@ -115,7 +118,7 @@ public class AttachServiceImpl implements AttachService {
         String extension = this.fileUtility.getFileNameProperty(
                 attach.getClientFileName()).getExtension();
         if (StringUtility.isNullOrEmpty(extension)) {
-            logger.warn("image url is wrong {}", imageUrl);
+            log.warn("image url is wrong {}", imageUrl);
             extension = Extension.PNG;
         }
         String originImagePath = FileConfig.getShuffleImagePhysicalPath(attachDTO, FileConstant.SIZE.ORIGIN);
@@ -146,7 +149,7 @@ public class AttachServiceImpl implements AttachService {
             this.attachDao.update(attach);
             return attach.getSerialNumber();
         } catch (Exception e) {
-            logger.error("update attach", e);
+            log.error("update attach", e);
             throw new BusinessException(SparrowError.GLOBAL_DB_UPDATE_ERROR);
         }
     }
