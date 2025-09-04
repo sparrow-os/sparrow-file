@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>sparrow-bom</artifactId>
+        <groupId>com.sparrowzoo</groupId>
+        <version>1.0.5-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+    <packaging>pom</packaging>
+    <artifactId>file-bom</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <groupId>com.sparrowzoo.file</groupId>
+    <properties>
+        <file_version>1.0.0-SNAPSHOT</file_version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.sparrowzoo.file</groupId>
+                <artifactId>file-protocol</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sparrowzoo.file</groupId>
+                <artifactId>file-dao-api</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sparrowzoo.file</groupId>
+                <artifactId>file-service</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sparrowzoo.file</groupId>
+                <artifactId>file-sparrow-dao</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sparrowzoo.file</groupId>
+                <artifactId>file-service</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sparrowzoo.file</groupId>
+                <artifactId>file-api</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sparrowzoo</groupId>
+                <artifactId>file-starter</artifactId>
+                <version>${file_version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <url>http://maven.apache.org</url>
+</project>

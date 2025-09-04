@@ -1,43 +1,48 @@
 package com.sparrow.file.po;
 
 import com.sparrow.protocol.dao.PO;
+import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "attach")
+@Data
 public class Attach extends PO {
     /**
      * 主键ID
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "int(11)")
     private Long id;
     /**
      * 文件id(文件的唯一标识)
      */
+    @Column(name = "serial_number", columnDefinition = "varchar(64)", unique = true)
     private String serialNumber;
+    @Column(name = "content_type", columnDefinition = "varchar(256) DEFAULT ''", updatable = false, nullable = false)
     private String contentType;
+    @Column(name = "path_key", columnDefinition = "varchar(32) DEFAULT ''", updatable = false, nullable = false)
     private String pathKey;
+    @Column(name = "business_type", columnDefinition = "tinyint(10) DEFAULT 0", updatable = false, nullable = false)
     private Integer businessType;
+    @Column(name = "business_id", columnDefinition = "tinyint(10) UNSIGNED DEFAULT 0", updatable = false, nullable = false)
     private Integer businessId;
     /**
      * 文件的实际大小
      */
+    @Column(name = "content_length", columnDefinition = "int(11) UNSIGNED DEFAULT 0", nullable = false)
     private Long contentLength;
     /**
      * 下载次数
      */
+    @Column(name = "download_times", columnDefinition = "int(11) UNSIGNED DEFAULT 0", nullable = false, updatable = false)
     private Long downloadTimes;
     /**
      * 客户端文件名
      */
+    @Column(name = "client_file_name", columnDefinition = "varchar(256) DEFAULT ''", updatable = false, nullable = false)
     private String clientFileName;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Attach() {
     }
@@ -57,83 +62,4 @@ public class Attach extends PO {
         this.contentLength = 0L;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", columnDefinition = "int(11)")
-    public Long getId() {
-        return this.id;
-    }
-
-    @Column(name = "serial_number", columnDefinition = "varchar(64)", unique = true)
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    @Column(name = "client_file_name", columnDefinition = "varchar(256) DEFAULT ''", updatable = false, nullable = false)
-    public String getClientFileName() {
-        return clientFileName;
-    }
-
-    @Column(name = "download_times", columnDefinition = "int(11) UNSIGNED DEFAULT 0", nullable = false, updatable = false)
-    public Long getDownloadTimes() {
-        return downloadTimes;
-    }
-
-    @Column(name = "content_length", columnDefinition = "int(11) UNSIGNED DEFAULT 0", nullable = false)
-    public Long getContentLength() {
-        return contentLength;
-    }
-
-    @Column(name = "content_type", columnDefinition = "varchar(256) DEFAULT ''", updatable = false, nullable = false)
-    public String getContentType() {
-        return this.contentType;
-    }
-
-    @Column(name = "path_key", columnDefinition = "varchar(32) DEFAULT ''", updatable = false, nullable = false)
-    public String getPathKey() {
-        return pathKey;
-    }
-
-
-    public void setPathKey(String pathKey) {
-        this.pathKey = pathKey;
-    }
-
-    @Column(name = "business_type", columnDefinition = "tinyint(10) DEFAULT 0", updatable = false, nullable = false)
-    public Integer getBusinessType() {
-        return businessType;
-    }
-
-    public void setBusinessType(Integer businessType) {
-        this.businessType = businessType;
-    }
-
-    @Column(name = "business_id", columnDefinition = "tinyint(10) UNSIGNED DEFAULT 0", updatable = false, nullable = false)
-    public Integer getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Integer businessId) {
-        this.businessId = businessId;
-    }
-
-    public void setClientFileName(String clientFileName) {
-        this.clientFileName = clientFileName;
-    }
-
-    public void setDownloadTimes(Long downloadTimes) {
-        this.downloadTimes = downloadTimes;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public void setContentLength(Long contentLength) {
-        this.contentLength = contentLength;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
 }
