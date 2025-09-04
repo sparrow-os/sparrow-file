@@ -6,11 +6,13 @@ import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ComponentScan(basePackages = {"com.sparrow.file"})//类注解
 @Slf4j
-public class ServletConfigurerAdapter {
+public class FileAutoConfiguration {
     @Bean
     public PathUrlConverter pathUrlConverter() {
         return new PathUrlConverter();
