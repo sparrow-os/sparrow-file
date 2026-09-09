@@ -19,6 +19,7 @@ import com.sparrow.utility.FileUtility;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class FileController {
 
 
     @GetMapping("/delete-file/{fileId}")
-    public void deleteAttach(Long fileId) throws BusinessException {
+    public void deleteAttach(@PathVariable("fileId") Long fileId) throws BusinessException {
         this.attachService.deleteImageById(fileId);
     }
 
@@ -63,13 +64,19 @@ public class FileController {
 
     @PostMapping("/upload.json")
     public String uploadFile(@RequestParam("file") MultipartFile file,
-                             String pathType) throws BusinessException {
+                             @RequestParam(value = "pathType", required = false) String pathType) throws BusinessException {
 
         Asserts.isTrue(file == null, FileError.UPLOAD_FILE_NAME_NULL);
         String physicalUpload = this.sparrowConfig.getMvc().getPhysicalUpload();
 
         try {
             FileConfig fileConfig = this.fileConfigAssemble.assemble(pathType);
+            // 业务级大小限制（按 pathKey 配置 attach_<key> 的第 2 段 length，单位 byte）。
+            // 超过时复用 Spring 的 MaxUploadSizeExceededException，把该 pathKey 上限作为 maxUploadSize 传入，
+            // 统一交给 FileControllerAdvice 兜底：Result code=12202、data=可读限制大小。
+            if (file.getSize() > fileConfig.getLength()) {
+                throw new MaxUploadSizeExceededException(fileConfig.getLength());
+            }
             LoginUser loginUser = SessionContext.getLoginUser();
             AttachUploadParam attachUploadParam = new AttachUploadParam();
             attachUploadParam.setClientFileName(file.getOriginalFilename());

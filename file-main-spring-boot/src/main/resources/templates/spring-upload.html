@@ -1,18 +1,368 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-    <title>upload demo-</title>
+    <meta charset="UTF-8">
+    <title>文件上传示例(调用 /upload.json)</title>
     <meta http-equiv="pragma" content="no-cache"/>
     <meta http-equiv="cache-control" content="no-cache"/>
     <meta http-equiv="expires" content="0"/>
+    <style>
+        body {
+            margin: 40px auto;
+            width: 660px;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            color: #333;
+        }
+        .tip {
+            background: #f6f8fa;
+            border-left: 4px solid #0969da;
+            padding: 8px 12px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        /* 用 <label for="file"> 模拟按钮：点击即触发隐藏的 file 输入框 */
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 26px;
+            color: #fff;
+            background: #0969da;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .upload-btn:hover { background: #0756b4; }
+        .upload-btn.disabled { opacity: .5; cursor: not-allowed; }
+        #fileName { margin-left: 10px; font-size: 13px; color: #666; }
+        #progressWrap { display: none; margin-top: 14px; }
+        #progressBar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #progressInner {
+            width: 0;
+            height: 100%;
+            background: #2da44e;
+            transition: width .2s;
+        }
+        #percent { font-size: 13px; color: #555; }
+        #preview { margin-top: 18px; }
+        #preview img {
+            max-width: 100%;
+            max-height: 380px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #error { color: #cf222e; font-size: 13px; margin-top: 8px; }
+    </style>
 </head>
 <body>
-<H1>preview</H1>
-<div style="width:200px;height: 200px" id="divPreview"></div>
-resource :http://r.sparrowzoo.net
-<H2>resource</H2>
-<iframe id="null.resource" class="file-frame"
-        src="./file-upload?path-key=resource"></iframe>
+<h2>文件上传示例</h2>
+<p class="tip">
+    原生 JS + <code>FormData</code> 提交到已有接口 <code>/upload.json</code>(multipart)，
+    后端返回 <code>Result</code>，成功时 <code>code="0"</code>、<code>data</code> 为可直接访问的 web url；
+    拿到 url 后直接用 <code>&lt;img&gt;</code> 回显预览，无需额外预览接口。
+</p>
+
+<label for="file" class="upload-btn" id="uploadBtn">选择文件并上传</label>
+<span id="fileName"></span>
+
+<input type="file" id="file" accept="image/*" style="display:none"/>
+
+<div id="progressWrap">
+    <div id="progressBar"><div id="progressInner"></div></div>
+    <span id="percent"></span>
+</div>
+<div id="error"></div>
+
+<div id="preview"></div>
+
+<script>
+    (function () {
+        var fileInput = document.getElementById("file");
+        var uploadBtn = document.getElementById("uploadBtn");
+        var fileNameEl = document.getElementById("fileName");
+        var progressWrap = document.getElementById("progressWrap");
+        var progressInner = document.getElementById("progressInner");
+        var percentEl = document.getElementById("percent");
+        var errorEl = document.getElementById("error");
+        // 文件大小超限业务码：FileError.UPLOAD_OUT_OF_SIZE → code = "1" + 模块22 + "02"
+        var OUT_OF_SIZE_CODE = "12202";
+        var previewEl = document.getElementById("preview");
+
+        // label 的 for 已指向 #file，点击即触发文件选择框
+        fileInput.addEventListener("change", function () {
+            var file = this.files[0];
+            if (file) {
+                upload(file);
+            }
+            this.value = ""; // 清空，保证再次选同一文件仍能触发 change
+        });
+
+        function upload(file) {
+            if (uploadBtn.classList.contains("disabled")) {
+                return; // 上传中忽略再次点击
+            }
+            uploadBtn.classList.add("disabled");
+            errorEl.textContent = "";
+            previewEl.innerHTML = "";
+            fileNameEl.textContent = file.name;
+            percentEl.textContent = "0%";
+
+            // 1. 构造 multipart 表单：file 对应后端 @RequestParam("file")，
+            //    pathType 对应配置键(resource -> system_config.properties 的 attach_resource)
+            var formData = new FormData();
+            formData.append("file", file);
+            formData.append("pathType", "resource");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/upload.json");
+
+            // 2. 原生进度事件
+            progressWrap.style.display = "block";
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    var percent = Math.round(e.loaded / e.total * 100);
+                    progressInner.style.width = percent + "%";
+                    percentEl.textContent = percent + "%";
+                }
+            };
+
+            xhr.onload = function () {
+                uploadBtn.classList.remove("disabled");
+                var result = parseResult(xhr);
+                if (result && result.code === "0" && result.data) {
+                    // 3. 成功：data 即 web url，直接用 <img> 预览
+                    percentEl.textContent = "上传成功，共 " + (file.size / 1024).toFixed(1) + " KB";
+                    progressInner.style.width = "100%";
+                    var img = document.createElement("img");
+                    img.alt = file.name;
+                    img.src = result.data;
+                    img.title = "点击在新窗口打开原图";
+                    img.onclick = function () { window.open(result.data, "_blank"); };
+                    previewEl.appendChild(img);
+                } else if (result && result.code === OUT_OF_SIZE_CODE) {
+                    // 文件大小超限：Result.data 携带后端计算的可读限制大小（如 "5MB"）
+                    errorEl.textContent = "上传失败：文件大小超过限制"
+                        + (result.data ? "（最大 " + result.data + "）" : "");
+                } else {
+                    errorEl.textContent = "上传失败：" + (result && result.message ? result.message : "HTTP " + xhr.status);
+                }
+            };
+            xhr.onerror = function () {
+                uploadBtn.classList.remove("disabled");
+                errorEl.textContent = "网络异常，上传失败";
+            };
+
+            xhr.send(formData);
+        }
+
+        // 解析后端返回的 Result JSON；非 JSON 时降级为文本
+        function parseResult(xhr) {
+            try {
+                return JSON.parse(xhr.responseText);
+            } catch (e) {
+                return { code: "1", message: xhr.responseText || ("HTTP " + xhr.status) };
+            }
+        }
+    })();
+</script>
+
+<!-- =====================================================================
+     以下为「大文件上传 413」结论备忘（追加于模板底部，打开页面即可查看）
+     ===================================================================== -->
+<style>
+    #memo-413 {
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        color: #1f2328;
+        line-height: 1.75;
+        margin: 40px auto;
+        max-width: 960px;
+        padding: 8px 4px;
+    }
+    #memo-413 .banner {
+        background: linear-gradient(135deg, #24292f, #0969da);
+        color: #fff;
+        border-radius: 12px;
+        padding: 18px 24px;
+        margin-bottom: 18px;
+    }
+    #memo-413 .banner h2 { margin: 0; font-size: 20px; }
+    #memo-413 .banner p { margin: 6px 0 0; opacity: .92; font-size: 13px; }
+    #memo-413 .card {
+        border: 1px solid #d0d7de;
+        border-left: 4px solid #0969da;
+        border-radius: 10px;
+        background: #fff;
+        padding: 16px 20px;
+        margin: 14px 0;
+        box-shadow: 0 1px 2px rgba(31,35,40,.04);
+    }
+    #memo-413 .card.warn { border-left-color: #cf222e; }
+    #memo-413 .card.ok { border-left-color: #1a7f37; }
+    #memo-413 .card h3 { margin: 0 0 8px; font-size: 15px; }
+    #memo-413 .tag {
+        display: inline-block; background: #ddf4ff; color: #0550ae;
+        border-radius: 20px; padding: 0 10px; font-size: 12px; margin-left: 6px;
+        vertical-align: middle;
+    }
+    #memo-413 .tag.red { background: #ffebe9; color: #cf222e; }
+    #memo-413 pre {
+        background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px;
+        padding: 12px 14px; overflow: auto; font-size: 12.5px;
+        font-family: "Cascadia Code", Consolas, Menlo, monospace; line-height: 1.6;
+    }
+    #memo-413 code {
+        background: rgba(175,184,193,.2); border-radius: 4px; padding: 1px 5px;
+        font-family: "Cascadia Code", Consolas, Menlo, monospace; font-size: 12.5px;
+    }
+    #memo-413 pre code { background: none; padding: 0; }
+    #memo-413 table {
+        border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0;
+    }
+    #memo-413 th, #memo-413 td {
+        border: 1px solid #d0d7de; padding: 7px 10px; text-align: left;
+    }
+    #memo-413 th { background: #f6f8fa; }
+    #memo-413 .quote {
+        border-left: 3px solid #0969da; background: #f6f8fa; padding: 8px 14px;
+        border-radius: 0 6px 6px 0; font-size: 13.5px; margin: 10px 0;
+    }
+</style>
+
+<div id="memo-413">
+    <div class="banner">
+        <h2>📌 大文件上传返回 413 的结论备忘（/upload.json 链路）</h2>
+        <p>记录时间：2026-09-09 · 范围：仅 Spring MVC 的 <code>/upload.json</code>（FileController.uploadFile，MultipartFile）；老 <code>/file-upload</code> servlet 不在本备忘范围。</p>
+    </div>
+
+    <div class="card">
+        <h3>① 先理解 Spring Boot 的默认 multipart 上限（MultipartProperties）</h3>
+        <p>Spring Boot 对「通过 <code>MultipartFile</code> 接收的上传」有两道默认上限，均未在 <code>application.properties</code> 里配置时按默认值生效（源码见 Boot 的 <code>MultipartProperties.java</code>）：</p>
+        <table>
+            <tr><th>配置项</th><th>默认值</th><th>含义</th></tr>
+            <tr>
+                <td><code>spring.servlet.multipart.max-file-size</code></td>
+                <td><b>1MB</b>（<code>DataSize.ofMegabytes(1)</code>）</td>
+                <td>单个文件的体积上限。<b>超过它就在 1MB 处被拦</b>，文件进不了业务代码。</td>
+            </tr>
+            <tr>
+                <td><code>spring.servlet.multipart.max-request-size</code></td>
+                <td><b>10MB</b>（<code>DataSize.ofMegabytes(10)</code>）</td>
+                <td>整个 multipart 请求体上限（含文件 + 表单字段 + multipart 边界开销），需 ≥ max-file-size。</td>
+            </tr>
+        </table>
+        <pre><code>// spring-boot-autoconfigure → MultipartProperties.java（默认值）
+private DataSize maxFileSize = DataSize.ofMegabytes(1);      // 单文件 1MB
+private DataSize maxRequestSize = DataSize.ofMegabytes(10);  // 整个请求 10MB</code></pre>
+        <div class="quote warn"><b>⚠️ 曾踩过的坑：</b>项目原没配这两个 key，一律按默认值 <b>1MB</b> 拦截 —— 想收 5MB 文件必须先调大。
+        现已覆盖为：<b><code>max-file-size=8MB</code> / <code>max-request-size=16MB</code></b>。
+        注意：这只是"容器接收上限"，不等于各业务 pathKey 允许的大小（后者在业务层按 <code>fileConfig.getLength()</code> 精确限制，见 ③④）。</div>
+        <pre><code># application.properties 放开接收上限（示例）
+spring.servlet.multipart.max-file-size=8MB
+spring.servlet.multipart.max-request-size=16MB</code></pre>
+    </div>
+
+    <div class="card">
+        <h3>② 为什么「没配任何 advice」直连也返回 413 <span class="tag red">根因</span></h3>
+        <p>超过上限时，Spring 在 multipart 解析阶段抛出的是 <code>MaxUploadSizeExceededException</code>，它<b>实现了 <code>ErrorResponse</code> 接口，自带 413 状态码</b>。所以框架无需任何 advice，兜底响应就是 HTTP 413。</p>
+        <pre><code>// spring-web → MaxUploadSizeExceededException.java（关键源码）
+public class MaxUploadSizeExceededException extends MultipartException
+        implements ErrorResponse {
+
+    private final ProblemDetail body = ProblemDetail.forStatusAndDetail(
+            HttpStatus.PAYLOAD_TOO_LARGE,            // 状态码 413
+            "Maximum upload size exceeded");
+
+    @Override public HttpStatusCode getStatusCode() { return HttpStatus.PAYLOAD_TOO_LARGE; }
+    @Override public ProblemDetail getBody() { return this.body; }
+}</code></pre>
+        <p>完整触发链：</p>
+        <pre><code>DispatcherServlet.doDispatch()
+  └─ checkMultipart()                    ← multipart 解析，异常发生点（handler 尚未匹配）
+       ├─ request.getParts()  → Tomcat 解析超限
+       └─ 抛 MaxUploadSizeExceededException  (implements ErrorResponse, status=413)
+             ↓ 此时没有任何业务 advice 能接到（原因见 ③）
+Spring Boot 兜底按异常自带状态码响应 → HTTP 413
+body: {"status":413, "message":"Maximum upload size exceeded", ...}</code></pre>
+        <div class="quote"><b>结论：</b>你看到的 413 是<b>框架默认行为</b>，语义正确但 body 是英文默认 JSON，
+        不是本项目统一的 <code>Result</code>。要把它变成友好提示 / 统一结构，才需要下面第 ③ 步的 advice。</div>
+    </div>
+
+    <div class="card warn">
+        <h3>③ FileControllerAdvice 统一兜底（已实现）<span class="tag red">单个 handler</span></h3>
+        <p><b>为什么原带 <code>basePackages</code> 不行：</b>容器 multipart 超限在 <code>checkMultipart()</code> 抛
+        <code>MaxUploadSizeExceededException</code>，此时 handler 尚未确定(null)，带 basePackages 的 advice 对 null 类型判定不适用
+        （<code>HandlerTypePredicate.test(null) == false</code>），接不到。<code>FileControllerAdvice</code> 因此改为
+        <b>不带任何 basePackages 的全局 advice</b>。<b>只声明一个</b>
+        <code>@ExceptionHandler(MaxUploadSizeExceededException.class)</code>，两类超限都汇到这里：</p>
+        <table>
+            <tr><th>来源</th><th>异常怎么来的</th><th>maxUploadSize</th></tr>
+            <tr>
+                <td>容器 multipart 超限（<code>spring.servlet.multipart.max-file-size</code>）</td>
+                <td>Spring 在 <code>checkMultipart()</code> 解析请求时自行抛出（handler 为 null、不知道 pathKey）</td>
+                <td>容器上限，如 8MB</td>
+            </tr>
+            <tr>
+                <td>pathKey 业务超限（<code>attach_&lt;key&gt;</code> 第 2 段 length）</td>
+                <td><code>FileController.uploadFile</code> 里 <code>file.getSize() &gt; fileConfig.getLength()</code> 时
+                <b>主动构造并抛出同一个异常</b>：<code>new MaxUploadSizeExceededException(fileConfig.getLength())</code></td>
+                <td>该 pathKey 上限，如 2,000,000 字节</td>
+            </tr>
+        </table>
+        <pre><code>// FileControllerAdvice（完整实现：全局、无 basePackages）
+@RestControllerAdvice
+public class FileControllerAdvice extends ControllerReturnAdvice {
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    public Result handleMaxUploadSizeExceeded(HttpServletRequest req, MaxUploadSizeExceededException e) {
+        log.error("upload file too large, max = {}", e.getMaxUploadSize(), e);
+        Result result = Result.fail(new BusinessException(FileError.UPLOAD_OUT_OF_SIZE));
+        if (e.getMaxUploadSize() &gt;= 0) {
+            result.setData(FileUtility.getInstance().getHumanReadableFileLength(e.getMaxUploadSize()));
+        }
+        return result;
+    }
+}
+// 刻意不覆写父类 handle(BusinessException)：其它业务异常走 sparrow 原始统一逻辑，不被本文件污染。
+// 超限一律抛 MaxUploadSizeExceededException，让上面的 handler 用 e.getMaxUploadSize() 输出限制值。</code></pre>
+    </div>
+
+    <div class="card">
+        <h3>④ 约定：code=12202 + HTTP 413 + data=可读限制（前端 code 映射）</h3>
+        <p>两类超限最终都返回 <code>FileError.UPLOAD_OUT_OF_SIZE</code>、<b>HTTP 413</b>。前端<b>不解析英文 message</b>，按 code 分支、展示 data：</p>
+        <pre><code>code = "1"(系统) + 模块22(FileModule.UPLOAD) + "02"(seq) = "12202"
+HTTP = 413 PAYLOAD_TOO_LARGE（容器超限与业务超限一致）
+data = 可读限制大小（容器上限 / pathKey 上限），如 "8MB" / "1.9MB"</code></pre>
+        <pre><code>// FileController.uploadFile、file.transferTo 之前 —— 业务超限直接复用 Spring 异常
+if (file.getSize() &gt; fileConfig.getLength()) {
+    throw new MaxUploadSizeExceededException((long) fileConfig.getLength());
+}</code></pre>
+        <pre><code>// spring-upload.html（error 分支：按 code 识别 + 展示 data）
+} else if (result &amp;&amp; result.code === "12202") {
+    errorEl.textContent = "上传失败：文件大小超过限制"
+        + (result.data ? "（最大 " + result.data + "）" : "");
+}</code></pre>
+        <div class="quote warn"><b>边界：</b>pathKey 上限(如 resource≈2MB) &lt; 容器上限(8MB) 时，超限由业务校验抛出（仍是 413）；
+        若某 pathKey 允许值 ≥ 容器上限，则被容器直接拦截。两条链路 code 相同、data 各自为当前生效上限，前端一套逻辑全覆盖。</div>
+    </div>
+
+    <div class="card ok">
+        <h3>改动清单（已按此落地）</h3>
+        <table>
+            <tr><th>#</th><th>位置</th><th>改动</th><th>目的</th></tr>
+            <tr><td>1</td><td>application.properties</td><td><code>max-file-size=8MB</code> / <code>max-request-size=16MB</code></td><td>放行超过默认 1MB 的文件</td></tr>
+            <tr><td>2</td><td><code>FileControllerAdvice</code></td><td>去 basePackages 变全局；只留 <code>MaxUploadSizeExceededException</code> 单 handler（413 + Result + data）；<b>不覆写</b> <code>handle(BusinessException)</code></td><td>容器/业务超限统一 12202；其它业务异常不受影响</td></tr>
+            <tr><td>3</td><td><code>FileController.uploadFile</code></td><td><code>file.getSize() &gt; fileConfig.getLength()</code> 时 <code>throw new MaxUploadSizeExceededException(length)</code></td><td>按 pathKey 精确限制且复用统一兜底</td></tr>
+            <tr><td>4</td><td>spring-upload.html</td><td>XHR error 分支按 <code>code=12202</code> 提示"最大 data"</td><td>前端友好提示超限</td></tr>
+        </table>
+    </div>
+</div>
+
 </body>
 </html>
-
-
