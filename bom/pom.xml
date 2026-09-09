@@ -51,11 +51,10 @@
                 <version>${file_version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sparrowzoo</groupId>
+                <groupId>com.sparrowzoo.file</groupId>
                 <artifactId>file-starter</artifactId>
                 <version>${file_version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <url>http://maven.apache.org</url>
 </project>

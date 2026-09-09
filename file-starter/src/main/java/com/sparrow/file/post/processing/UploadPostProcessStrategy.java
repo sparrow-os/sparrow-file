@@ -3,8 +3,8 @@ package com.sparrow.file.post.processing;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.enums.UploadDealType;
 import com.sparrow.file.param.AttachUploadParam;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

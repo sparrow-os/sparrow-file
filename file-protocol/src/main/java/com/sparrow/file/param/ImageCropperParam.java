@@ -1,10 +1,14 @@
 package com.sparrow.file.param;
 
 import com.sparrow.protocol.Param;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ImageCropperParam implements Param {
-    public ImageCropperParam() {
-    }
 
     /**
      * 原图路径
@@ -27,53 +31,6 @@ public class ImageCropperParam implements Param {
      */
     private Integer height;
 
-    public ImageCropperParam(String imageUrl, Integer x, Integer y, Integer width, Integer height) {
-        this.imageUrl = imageUrl;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public Integer getX() {
-        return x;
-    }
-
-    public Integer getY() {
-        return y;
-    }
-
-    public Integer getWidth() {
-        return width;
-    }
-
-    public Integer getHeight() {
-        return height;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public void setX(Integer x) {
-        this.x = x;
-    }
-
-    public void setY(Integer y) {
-        this.y = y;
-    }
-
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
 
     @Override
     public String toString() {

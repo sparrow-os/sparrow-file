@@ -1,9 +1,8 @@
 package com.sparrow.file.po;
 
 import com.sparrow.protocol.dao.PO;
+import jakarta.persistence.*;
 import lombok.Data;
-
-import javax.persistence.*;
 
 @Table(name = "attach")
 @Data

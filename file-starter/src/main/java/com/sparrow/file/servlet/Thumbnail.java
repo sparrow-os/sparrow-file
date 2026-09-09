@@ -9,12 +9,12 @@ import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.PropertyUtility;
 import com.sparrow.utility.RegexUtility;
 import com.sparrow.utility.StringUtility;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * http://thumbnail.sparrowzoo.com/thumbnail?domain=img1_sparrowzoo_net&url=/ios_big_thread/6/361/6361.png
  */
-public class Thumbnail extends HttpServlet{
+public class Thumbnail extends HttpServlet {
     private Map<String, String> pathConfig = new ConcurrentHashMap<String, String>();
     private Map<String, Map<String, String>> thumbnailSize = new ConcurrentHashMap<String, Map<String, String>>();
 

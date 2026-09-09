@@ -4,7 +4,7 @@ import com.sparrow.file.dao.AttachDAO;
 import com.sparrow.file.po.Attach;
 import com.sparrow.orm.query.*;
 import com.sparrow.orm.template.impl.ORMStrategy;
-import javax.inject.Named;
+import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

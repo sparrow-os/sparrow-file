@@ -14,14 +14,25 @@
     <artifactId>file-main-spring-boot</artifactId>
 
     <dependencies>
+        <!--只用于演示效果-->
         <dependency>
             <groupId>com.sparrowzoo.passport</groupId>
             <artifactId>passport-starter</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.sparrowzoo</groupId>
+            <groupId>com.sparrowzoo.file</groupId>
             <artifactId>file-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sparrowzoo</groupId>
+            <artifactId>sparrow-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sparrowzoo</groupId>
+            <artifactId>sparrow-container</artifactId>
         </dependency>
         <!-- thymeleaf -->
         <dependency>

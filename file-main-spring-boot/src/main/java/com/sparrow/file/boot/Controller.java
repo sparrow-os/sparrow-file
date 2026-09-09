@@ -6,8 +6,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 public class Controller {
-    @RequestMapping("hello2")
-    public ModelAndView hello() {
-        return new ModelAndView("/hello");
+    @RequestMapping("upload")
+    public ModelAndView upload() {
+        return new ModelAndView("/upload");
     }
 }

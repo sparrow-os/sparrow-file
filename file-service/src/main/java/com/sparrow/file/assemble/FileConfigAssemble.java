@@ -9,8 +9,7 @@ import com.sparrow.protocol.Size;
 import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
-
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 /**
  * #pathKey=path(路径)|length(长度单位byte)|type|big_size(-1表示不限制)|middle_size|small_size

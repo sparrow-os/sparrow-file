@@ -26,28 +26,26 @@ import com.sparrow.protocol.constant.Constant;
 import com.sparrow.protocol.constant.magic.Symbol;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.StringUtility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class FileUpload extends HttpServlet {
-
-    private static Logger logger = LoggerFactory.getLogger(FileUpload.class);
-    private ExpirableCache<String, UploadingProgress> expirableStatusCache = new SoftExpirableCache<>("uploading-progress", 10);
+    private final ExpirableCache<String, UploadingProgress> expirableStatusCache = new SoftExpirableCache<>("uploading-progress", 10);
     private FileConfigAssemble configAssemble;
     private AttachService attachService;
-
     private PathUrlConverter pathUrlConverter;
 
     public FileUpload() {
@@ -71,6 +69,7 @@ public class FileUpload extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+        PrintWriter out = response.getWriter();
         //设置服务器端编码
         //https://articles.zsxq.com/id_sfemnfjowaaw.html
         response.setCharacterEncoding("UTF-8");
@@ -83,20 +82,15 @@ public class FileUpload extends HttpServlet {
 
         String pathKey = request.getParameter("path-key");
         if (pathKey == null) {
+            initErrorUploadHtml(out, "path-key not found");
             return;
         }
 
-        PrintWriter out = response.getWriter();
         String editor = request.getParameter("editor");
-        LoginUser loginToken = SessionContext.getLoginUser();
-        if (loginToken == null || LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
-            initVisitorUploadHtml(out, pathKey, editor);
-            return;
-        }
         initUploadHtml(out, pathKey, new UploadingProgress(), editor);
     }
 
-    private void initVisitorUploadHtml(PrintWriter out, String pathKey, String editor) {
+    private void initErrorUploadHtml(PrintWriter out, String msg) {
         out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         out.println("<html>");
         out.println("<head>");
@@ -105,21 +99,22 @@ public class FileUpload extends HttpServlet {
         out.println("</head>");
         out.println("<body>");
         out.println("<div>");
-        out.println("客户端实现上传功能，请使用HTML5的File API上传文件");
+        out.println(msg);
         out.println("</div>");
         out.println("</body>");
         out.println("</html>");
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LoginUser loginToken = SessionContext.getLoginUser();
-        if (LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
-            logger.error("current user is not login");
+        if (loginToken == null || LoginUser.VISITOR_ID.equals(loginToken.getUserId())) {
+            log.error("current user is not login");
+            this.initErrorUploadHtml(response.getWriter(), "please login!");
             return;
         }
-        logger.info("---------file uploading-----------");
-        byte[] buffer = new byte[1024];
+        log.info("File uploading method {},REQ_ID {}", request.getMethod(), request.getRequestId());
+        byte[] buffer = new byte[8092];
         int readLength;
         int fileNameIndex;
         String readString;
@@ -133,7 +128,7 @@ public class FileUpload extends HttpServlet {
             attachUploadParam = this.assembleFileInfo(request);
             status = this.expirableStatusCache.get(attachUploadParam.getSerialNumber());
         } catch (IOException e) {
-            logger.error("fetch status error", e);
+            log.error("fetch status error", e);
             return;
         }
 
@@ -144,7 +139,30 @@ public class FileUpload extends HttpServlet {
                 .getLength();
         if (request.getContentLength() > fileConfigLength) {
             status.setError(FileError.UPLOAD_OUT_OF_SIZE.getMessage());
-            this.uploadEnd(status, pathKey, editor, response);
+            log.info("upload end, reading length {}", status.getReadLength());
+            status.setReadLength(status
+                    .getContentLength());
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setStatus(HttpStatus.PAYLOAD_TOO_LARGE.value());
+            PrintWriter out = null;
+            try {
+                out = response.getWriter();
+                initUploadHtml(out, pathKey, status, editor);
+                out.flush();
+            } catch (IOException e) {
+                log.error("upload end io error", e);
+            } finally {
+                long t = System.currentTimeMillis();
+                ServletInputStream servletInputStream = request.getInputStream();
+                while (servletInputStream.read(buffer,
+                        0, buffer.length) != -1) {
+                }
+                servletInputStream.close();
+                if (out != null) {
+                    out.close();
+                }
+                log.info("cost {}", System.currentTimeMillis() - t);
+            }
             return;
         }
 
@@ -239,14 +257,14 @@ public class FileUpload extends HttpServlet {
                 if (fileEndFlag.equals(readString)) {
                     continue;
                 }
-                fileOutputStream.write(buffer, 0, readLength);
+                if (fileOutputStream != null) {
+                    fileOutputStream.write(buffer, 0, readLength);
+                }
             }
-        } catch (IOException e) {
-            logger.error("make thumbnail", e);
+        } catch (IOException | BusinessException e) {
+            log.error("make thumbnail", e);
             status.setError(FileError.UPLOAD_SERVICE_ERROR.getMessage());
             this.uploadEnd(status, pathKey, editor, response);
-        } catch (BusinessException e) {
-            throw new RuntimeException(e);
         } finally {
             if (fileOutputStream != null) {
                 try {
@@ -269,17 +287,21 @@ public class FileUpload extends HttpServlet {
     }
 
     private void uploadEnd(UploadingProgress status, String pathKey, String editor, HttpServletResponse response) {
-        logger.info("upload end, reading length {}", status.getReadLength());
+        log.info("upload end, reading length {}", status.getReadLength());
         status.setReadLength(status
                 .getContentLength());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        PrintWriter out = null;
         try {
-            PrintWriter out = response.getWriter();
+            out = response.getWriter();
             initUploadHtml(out, pathKey, status, editor);
             out.flush();
-            out.close();
         } catch (IOException e) {
-            logger.error("upload end io error", e);
+            log.error("upload end io error", e);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
@@ -311,7 +333,7 @@ public class FileUpload extends HttpServlet {
                 + configReader.getI18nValue(ConfigKeyLanguage.WEBSITE_NAME) + "</title>");
         out.println("<script type=\"text/javascript\">");
         //跨域必须两端都加
-        out.println(String.format("window.onload=function(){document.domain=window.location.host.substr(window.location.host.indexOf('.')+1);if(!parent.$){return;}if(parent.$.file.uploadCallBack){parent.$.file.uploadCallBack(%s,%s,%s);}}",
+        out.println(String.format("window.onload=function(){document.domain=window.location.host.substr(0,window.location.host.indexOf(':'));if(!parent.$){return;}if(parent.$.file.uploadCallBack){parent.$.file.uploadCallBack(%s,%s,%s);}}",
                 json.toString(progress),
                 ("null".equals(editor) || editor == null) ? "null" : "parent." + editor,
                 json.toString(fileConfig.getSize())));

@@ -8,6 +8,7 @@ import com.sparrow.file.enums.UploadDealType;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.support.constant.PathConfig;
 import com.sparrow.file.support.enums.FileError;
+import com.sparrow.io.file.FileNameBuilder;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.LoginUser;
@@ -15,6 +16,8 @@ import com.sparrow.protocol.Size;
 import com.sparrow.protocol.constant.magic.Digit;
 import com.sparrow.utility.FileUtility;
 import lombok.Data;
+
+import java.io.File;
 
 @Data
 public class FileConfig {
@@ -53,6 +56,11 @@ public class FileConfig {
                         fileNameProperty.getFullFileName())
                 .replace("$serialNumber", attachUploadParam.getSerialNumber())
                 .replace("$extension", fileExtension);
+
+        // 处理windows路径
+        if (physicalFullPath.contains("/")) {
+            physicalFullPath = physicalFullPath.replace("/", File.separator);
+        }
         return physicalFullPath;
     }
 
@@ -84,9 +92,11 @@ public class FileConfig {
 
         //img_shuffle_dir_0=file://ip1:port/sparrow/img0 参数在key中定义
         String imgShufflerDir = configReader.getValue(PathConfig.IMG_SHUFFLER_DIR + "_" + remaining);
-        path = imgShufflerDir
-                + "/%1$s/%2$s/%3$s/%4$s%5$s";
-        return String.format(path, size, remaining2, remaining1,
-                attach.getId(), fileExtension);
+        FileNameBuilder fileNameBuilder = new FileNameBuilder(imgShufflerDir);
+        return fileNameBuilder.joint(size)
+                .joint(remaining2+"")
+                .joint(remaining1+"")
+                .fileName(attach.getId()+"")
+                .extension(fileExtension).build();
     }
 }

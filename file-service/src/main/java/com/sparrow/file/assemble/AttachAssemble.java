@@ -3,8 +3,8 @@ package com.sparrow.file.assemble;
 import com.sparrow.file.dto.AttachDTO;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.po.Attach;
+import jakarta.inject.Named;
 
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 

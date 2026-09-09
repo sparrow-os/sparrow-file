@@ -14,13 +14,13 @@ import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.LoginUser;
-import com.sparrow.spring.starter.config.SparrowConfig;
+import com.sparrow.spring.config.SparrowConfig;
 import com.sparrow.utility.FileUtility;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -76,7 +76,7 @@ public class FileController {
             attachUploadParam.setContentType(file.getContentType());
             attachUploadParam.setContentLength((int) file.getSize());
             attachUploadParam.setCreateUserId(loginUser.getUserId());
-            attachUploadParam.setEditor("im");
+            attachUploadParam.setEditor("");
             String physicalFullPath = this.getPhysicalFilePath(attachUploadParam, fileConfig);
             file.transferTo(new File(physicalFullPath));
             this.uploadPostProcessStrategy.uploadPostProcessing(physicalUpload, attachUploadParam, fileConfig);

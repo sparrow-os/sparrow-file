@@ -1,47 +1,36 @@
 package com.sparrow.file.support.utils.path.url;
 
 import com.sparrow.container.ConfigReader;
+import com.sparrow.container.Container;
 import com.sparrow.core.spi.ApplicationContext;
 import com.sparrow.file.support.constant.PathConfig;
 import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.StringUtility;
 import lombok.Data;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PathUrlConverter {
-    @Data
-    static class PhysicalPathWebUrlPair {
-        PhysicalPathWebUrlPair(String physicalPath, String webUrl) {
-            this.physicalPath = physicalPath;
-            this.webUrl = webUrl;
-        }
-
-        private String physicalPath;
-        private String webUrl;
-    }
-
-    private Map<String, String> physicalPathWebUrlMap = new HashMap<>();
-    private Map<String, String> webUrlPhysicalPathMap = new HashMap<>();
-
+public class PathUrlConverter{
     /**
      * resource=${resource}
      * upload=${upload}
+     *
      * root_domain=sparrowzoo.com
      * root_path=http://upload.sparrowzoo.com
      * physical_resource=${physical_resource}
      * physical_upload=${physical_upload}
      */
     public PathUrlConverter() {
-        WebConfigReader webConfigReader= ApplicationContext.getContainer().getBean(WebConfigReader.class);
+        Container container=ApplicationContext.getContainer();
+        WebConfigReader webConfigReader = container.getBean(WebConfigReader.class);
+        ConfigReader configReader = container.getBean(ConfigReader.class);
+        String resource = webConfigReader.getResource();
+        String physicalResource = webConfigReader.getPhysicalResource();
 
-        ConfigReader configReader= ApplicationContext.getContainer().getBean(ConfigReader.class);
-        String resource =webConfigReader.getResource();
-        String physicalResource =webConfigReader.getPhysicalResource();
-
-        String upload =webConfigReader.getUpload();
-        String physicalUploadPath =webConfigReader.getPhysicalUpload();
+        String upload = webConfigReader.getUpload();
+        String physicalUploadPath = webConfigReader.getPhysicalUpload();
 
         int shuffleImageNum = configReader.getIntegerValue(PathConfig.IMG_SHUFFLER_NUM);
         this.physicalPathWebUrlMap.put(physicalResource, resource);
@@ -61,6 +50,20 @@ public class PathUrlConverter {
             this.physicalPathWebUrlMap.put(shuffleUrlPhysicalPath, shuffleUrl);
         }
     }
+
+    @Data
+    static class PhysicalPathWebUrlPair {
+        PhysicalPathWebUrlPair(String physicalPath, String webUrl) {
+            this.physicalPath = physicalPath;
+            this.webUrl = webUrl;
+        }
+
+        private String physicalPath;
+        private String webUrl;
+    }
+
+    private Map<String, String> physicalPathWebUrlMap = new HashMap<>();
+    private Map<String, String> webUrlPhysicalPathMap = new HashMap<>();
 
     private PhysicalPathWebUrlPair getPhysicalPathByWebUrl(String webUrl) {
         for (String configWebUrl : this.webUrlPhysicalPathMap.keySet()) {
@@ -89,6 +92,8 @@ public class PathUrlConverter {
 
     public String getWebUrlByPhysicalFileName(String physicalFileName) {
         PhysicalPathWebUrlPair physicalPathWebUrlPair = this.getWebUrlByPhysicalPath(physicalFileName);
-        return physicalFileName.replace(physicalPathWebUrlPair.physicalPath, physicalPathWebUrlPair.webUrl);
+        String webUrl = physicalFileName.replace(physicalPathWebUrlPair.physicalPath, physicalPathWebUrlPair.webUrl);
+        webUrl = webUrl.replace(File.separator, "/");
+        return webUrl;
     }
 }

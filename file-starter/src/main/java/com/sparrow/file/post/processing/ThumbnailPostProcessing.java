@@ -4,10 +4,9 @@ import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.utils.ImageUtility;
+import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Named;
 
 @Named
 public class ThumbnailPostProcessing implements UploadPostProcessing {

@@ -21,10 +21,10 @@ import com.sparrow.support.web.WebConfigReader;
 import com.sparrow.utility.FileUtility;
 import com.sparrow.utility.HttpClient;
 import com.sparrow.utility.StringUtility;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
