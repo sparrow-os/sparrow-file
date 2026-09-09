@@ -10,4 +10,9 @@ public class Controller {
     public ModelAndView upload() {
         return new ModelAndView("/upload");
     }
+
+    @RequestMapping("spring-upload")
+    public ModelAndView springUpload() {
+        return new ModelAndView("/spring-upload");
+    }
 }
