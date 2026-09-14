@@ -1,18 +1,173 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>upload demo-</title>
+    <meta charset="UTF-8"/>
     <meta http-equiv="pragma" content="no-cache"/>
     <meta http-equiv="cache-control" content="no-cache"/>
     <meta http-equiv="expires" content="0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Spring 上传示例 · Sparrow File</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #0b0b14;
+            color: #f4f4f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 48px 16px;
+        }
+        .page { width: 100%; max-width: 600px; }
+        header { text-align: center; margin-bottom: 32px; }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: #8a8aa0; font-size: 14px; }
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-title { font-size: 14px; font-weight: 600; color: #b9b9cc; margin-bottom: 14px; }
+        /* 文件选择框 */
+        .file-input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #b9b9cc;
+            font-size: 13px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .file-input::file-selector-button {
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: #f4f4f7;
+            padding: 6px 14px;
+            border-radius: 8px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        /* 上传按钮 */
+        .btn-upload {
+            width: 100%;
+            border: none;
+            background: linear-gradient(135deg, #6d5cff, #a855f7);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .btn-upload:hover { opacity: 0.9; }
+        /* 预览区 */
+        .preview {
+            min-height: 160px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .preview .empty { color: #5c5c70; font-size: 14px; }
+        .preview .error { color: #f43f5e; font-size: 14px; }
+        .preview img { max-width: 100%; max-height: 300px; border-radius: 8px; }
+        .preview .url {
+            font-size: 12px; color: #8a8aa0;
+            word-break: break-all;
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+        }
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            font-size: 13px;
+            padding: 7px 16px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6d5cff, #a855f7);
+        }
+        .back {
+            display: inline-block;
+            margin-top: 8px;
+            color: #8a8aa0;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        .back:hover { color: #fff; }
+    </style>
 </head>
 <body>
-<H1>preview</H1>
-<div style="width:200px;height: 200px" id="divPreview"></div>
-resource :http://r.sparrowzoo.net
-<H2>resource</H2>
-<iframe id="null.resource" class="file-frame"
-        src="./file-upload?path-key=resource"></iframe>
+<div class="page">
+    <header>
+        <h1>Spring 上传示例</h1>
+        <p class="subtitle">使用 Spring 接口 upload.json 上传，选择文件后点击上传按钮</p>
+    </header>
+
+    <!-- 第一步：选择文件 -->
+    <div class="card">
+        <div class="card-title">① 选择文件</div>
+        <input type="file" id="fileInput" class="file-input"/>
+        <button class="btn-upload" onclick="upload()">上传文件</button>
+    </div>
+
+    <!-- 第二步：预览结果 -->
+    <div class="card">
+        <div class="card-title">② 上传预览</div>
+        <div class="preview" id="divPreview">
+            <span class="empty">上传成功后，图片会显示在这里</span>
+        </div>
+    </div>
+
+    <p style="text-align:center;"><a class="back" href="/index.html">← 返回首页</a></p>
+</div>
+
+<script>
+    // 点击“上传文件”按钮后执行
+    function upload() {
+        var input = document.getElementById("fileInput");
+        var file = input.files[0];
+        var preview = document.getElementById("divPreview");
+
+        if (!file) {
+            preview.innerHTML = '<span class="error">请先选择文件</span>';
+            return;
+        }
+
+        // 组装表单数据：file 是文件，pathType 是存储目录（resource = 资源目录）
+        var form = new FormData();
+        form.append("file", file);
+        form.append("pathType", "resource");
+
+        preview.innerHTML = '<span class="empty">上传中...</span>';
+
+        // 调用 Spring 上传接口，返回的是文件的访问地址
+        fetch("upload.json", { method: "POST", body: form })
+            .then(function (res) { return res.text(); })
+            .then(function (url) {
+                url = (url || "").trim();
+                if (!url || url.charAt(0) === "{") {
+                    preview.innerHTML = '<span class="error">上传失败，请重试</span>';
+                    return;
+                }
+                preview.innerHTML =
+                    '<img src="' + url + '" alt="预览图"/>' +
+                    '<div class="url">' + url + '</div>' +
+                    '<a class="btn" href="' + url + '" target="_blank">打开原图</a>';
+            })
+            .catch(function () {
+                preview.innerHTML = '<span class="error">上传失败，请重试</span>';
+            });
+    }
+</script>
 </body>
 </html>
-
-

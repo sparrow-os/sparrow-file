@@ -48,6 +48,7 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
+                    <include>**/*.html</include>
                     <include>*.xml</include>
                     <include>*.properties</include>
                     <include>thumbnail/**/**</include>
