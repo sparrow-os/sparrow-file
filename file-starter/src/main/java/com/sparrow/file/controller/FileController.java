@@ -84,6 +84,7 @@ public class FileController {
             attachUploadParam.setContentLength((int) file.getSize());
             attachUploadParam.setCreateUserId(loginUser.getUserId());
             attachUploadParam.setEditor("");
+            attachUploadParam.setPathKey(pathType);
             String physicalFullPath = this.getPhysicalFilePath(attachUploadParam, fileConfig);
             file.transferTo(new File(physicalFullPath));
             this.uploadPostProcessStrategy.uploadPostProcessing(physicalUpload, attachUploadParam, fileConfig);

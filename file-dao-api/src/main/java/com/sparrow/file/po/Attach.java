@@ -4,7 +4,7 @@ import com.sparrow.protocol.dao.PO;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Table(name = "attach")
+@Table(name = "t_attach")
 @Data
 public class Attach extends PO {
     /**
@@ -23,8 +23,8 @@ public class Attach extends PO {
     private String contentType;
     @Column(name = "path_key", columnDefinition = "varchar(32) DEFAULT ''", updatable = false, nullable = false)
     private String pathKey;
-    @Column(name = "business_type", columnDefinition = "tinyint(10) DEFAULT 0", updatable = false, nullable = false)
-    private Integer businessType;
+    @Column(name = "business_type", columnDefinition = "varchar(32) DEFAULT ''", updatable = false, nullable = false)
+    private String businessType;
     @Column(name = "business_id", columnDefinition = "tinyint(10) UNSIGNED DEFAULT 0", updatable = false, nullable = false)
     private Integer businessId;
     /**

@@ -41,46 +41,6 @@ public class FileAutoConfiguration {
     }
 
     /**
-     * 注册 OpenAPI 元信息。
-     *
-     * <ul>
-     *   <li>{@link ConditionalOnMissingBean}：若宿主项目已自定义 {@link OpenAPI} Bean，
-     *       则本 Bean 不再注册，宿主配置优先。</li>
-     *   <li>{@link ConditionalOnProperty}：通过 {@code sparrow.file.openapi.enabled=false}
-     *       可关闭本 starter 提供的元信息。</li>
-     * </ul>
-     */
-    @Bean
-    @ConditionalOnMissingBean(OpenAPI.class)
-    @ConditionalOnProperty(prefix = "sparrow.file.openapi", name = "enabled",
-            havingValue = "true", matchIfMissing = true)
-    public OpenAPI fileOpenAPI(FileOpenApiProperties properties) {
-        Info info = new Info()
-                .title(properties.getTitle())
-                .description(properties.getDescription())
-                .version(properties.getVersion());
-
-        if (StringUtils.hasText(properties.getTermsOfService())) {
-            info.setTermsOfService(properties.getTermsOfService());
-        }
-
-        FileOpenApiProperties.Contact contact = properties.getContact();
-        if (contact != null) {
-            info.contact(new Contact()
-                    .name(contact.getName())
-                    .url(contact.getUrl())
-                    .email(contact.getEmail()));
-        }
-
-        FileOpenApiProperties.License license = properties.getLicense();
-        if (license != null && (StringUtils.hasText(license.getName()) || StringUtils.hasText(license.getUrl()))) {
-            info.license(new License().name(license.getName()).url(license.getUrl()));
-        }
-
-        return new OpenAPI().info(info);
-    }
-
-    /**
      * 注册一个分组，用于在 Swagger UI 右上角下拉中按应用隔离接口文档。
      *
      * <ul>

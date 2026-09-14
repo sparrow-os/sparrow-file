@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
  * 原始统一逻辑，不被文件大小逻辑污染。</p>
  */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {"com.sparrow.file.controller"})
 public class FileControllerAdvice extends ControllerReturnAdvice {
 
     /**

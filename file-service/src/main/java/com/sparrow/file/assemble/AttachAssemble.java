@@ -1,8 +1,11 @@
 package com.sparrow.file.assemble;
 
+import com.sparrow.context.SessionContext;
 import com.sparrow.file.dto.AttachDTO;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.po.Attach;
+import com.sparrow.protocol.LoginUser;
+import com.sparrow.protocol.enums.StatusRecord;
 import jakarta.inject.Named;
 
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ public class AttachAssemble {
 
     public Attach assembleNewAttach(AttachUploadParam bo) {
         Attach po = new Attach();
+        LoginUser loginUser = SessionContext.getLoginUser();
         po.setSerialNumber(bo.getSerialNumber());
         po.setClientFileName(bo.getClientFileName());
         po.setCreateUserId(bo.getCreateUserId());
@@ -20,6 +24,14 @@ public class AttachAssemble {
         po.setDownloadTimes(0L);
         po.setContentLength((long) bo.getContentLength());
         po.setContentType(bo.getContentType());
+        po.setCreateUserName(loginUser.getUserName());
+        po.setModifiedUserName(loginUser.getUserName());
+        po.setBusinessType(bo.getPathKey());
+        po.setPathKey(bo.getPathKey());
+        po.setGmtModified(System.currentTimeMillis());
+        po.setBusinessId(0);
+        po.setStatus(StatusRecord.ENABLE);
+        po.setDeleted(false);
         return po;
     }
 
