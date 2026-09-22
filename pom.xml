@@ -8,6 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <modules>
+        <module>bom</module>
         <module>file-api</module>
         <module>file-sparrow-dao</module>
         <module>file-dao-api</module>

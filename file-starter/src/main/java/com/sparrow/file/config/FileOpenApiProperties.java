@@ -1,28 +1,33 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.sparrow.file.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * File starter 的 OpenAPI 元信息配置。
+ * File starter 的 OpenAPI 分组配置。
  *
- * <p>统一使用 {@code sparrow.file.openapi.*} 前缀，避免与 springdoc 官方
- * {@code springdoc.*} 以及宿主应用、passport starter 的 {@code sparrow.passport.openapi.*}
- * 配置命名空间冲突，从而实现 starter 与宿主项目、passport 项目的隔离。
+ * <p>使用 {@code sparrow.openapi.file.group.*} 前缀配置分组名称和扫描包，
+ * 避免与 springdoc 官方 {@code springdoc.*} 及其他应用的配置命名空间冲突。
  */
-@ConfigurationProperties(prefix = "sparrow.file.openapi")
+@ConfigurationProperties(prefix = "sparrow.openapi.file.group")
+@Data
 public class FileOpenApiProperties {
-
-    /**
-     * 是否注册本 starter 提供的 OpenAPI 元信息 Bean。
-     * 关闭后，若宿主未自定义，springdoc 会回退到默认的空 Info。
-     */
-    private boolean enabled = true;
-
-    private String title = "Sparrow File";
-
-    private String description = "Sparrow File";
-
-    private String version = "1.0";
 
     /**
      * Swagger UI 分组名称，用于右上角下拉中隔离不同应用的接口文档。
@@ -34,129 +39,4 @@ public class FileOpenApiProperties {
      */
     private String packagesToScan = "com.sparrow.file";
 
-    private String termsOfService;
-
-    private final Contact contact = new Contact();
-
-    private final License license = new License();
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public String getPackagesToScan() {
-        return packagesToScan;
-    }
-
-    public void setPackagesToScan(String packagesToScan) {
-        this.packagesToScan = packagesToScan;
-    }
-
-    public String getTermsOfService() {
-        return termsOfService;
-    }
-
-    public void setTermsOfService(String termsOfService) {
-        this.termsOfService = termsOfService;
-    }
-
-    public Contact getContact() {
-        return contact;
-    }
-
-    public License getLicense() {
-        return license;
-    }
-
-    public static class Contact {
-
-        private String name = "harry";
-
-        private String url = "http://www.sparrowzoo.com";
-
-        private String email = "zh_harry@163.com";
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-    }
-
-    public static class License {
-
-        private String name;
-
-        private String url;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-    }
 }

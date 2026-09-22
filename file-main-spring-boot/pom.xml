@@ -7,7 +7,7 @@
         <artifactId>file-bom</artifactId>
         <groupId>com.sparrowzoo.file</groupId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath>../bom/pom.xml</relativePath>
     </parent>
 
     <groupId>com.sparrow.file</groupId>
