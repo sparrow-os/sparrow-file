@@ -47,7 +47,6 @@ public class AttachAssemble {
         po.setGmtModified(System.currentTimeMillis());
         po.setBusinessId(0);
         po.setStatus(StatusRecord.ENABLE);
-        po.setDeleted(false);
         return po;
     }
 
