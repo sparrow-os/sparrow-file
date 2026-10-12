@@ -67,7 +67,7 @@ public class FileController {
 
 
     @PostMapping("/base64-upload.json")
-    public String saveImageContent(@RequestBody AttachUploadParam attachUploadParam) throws BusinessException {
+    public String saveImageContent(@RequestBody AttachUploadParam attachUploadParam) throws BusinessException, IOException {
         FileConfig fileConfig = this.fileConfigAssemble.assemble(attachUploadParam.getPathKey());
         FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(attachUploadParam.getClientFileName());
         attachUploadParam.setContentType(fileNameProperty.getContentType());
@@ -75,7 +75,8 @@ public class FileController {
         int fileLength = FileUtility.getInstance().generateImage(attachUploadParam.getBase64Content(), physicalUrl);
         attachUploadParam.setContentLength(fileLength);
         this.uploadPostProcessStrategy.uploadPostProcessing(physicalUrl, attachUploadParam, fileConfig);
-        return this.pathUrlConverter.getWebUrlByPhysicalFileName(physicalUrl);
+        String originUrl = this.pathUrlConverter.getWebUrlByPhysicalFileName(physicalUrl);
+        return originUrl.replace(FileConstant.SIZE.ORIGIN, FileConstant.SIZE.SMALL);
     }
 
     @PostMapping("/upload.json")

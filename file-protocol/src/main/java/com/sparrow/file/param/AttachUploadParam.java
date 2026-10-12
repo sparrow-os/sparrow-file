@@ -21,7 +21,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class AttachUploadParam {
+public class AttachUploadParam extends ImageCropperParam {
     /**
      * 文件上传生成的序列号
      */
@@ -30,25 +30,18 @@ public class AttachUploadParam {
      * 目录的配置key,即belong business
      */
     private String pathKey;
-    private String editor;
     private Long createUserId;
     private String clientFileName;
     private String contentType;
     private Integer contentLength;
     private String base64Content;
+    private String editor;
 
-    public void setClientFileName(String clientFileName) {
-        this.clientFileName = clientFileName;
-    }
 
     public String getSerialNumber() {
         if (this.serialNumber == null) {
             return UUID.randomUUID().toString();
         }
         return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
     }
 }

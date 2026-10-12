@@ -24,6 +24,8 @@ import jakarta.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 @Named
 public class UploadPostProcessStrategy implements UploadPostProcessing {
     private static Logger logger = LoggerFactory.getLogger(UploadPostProcessStrategy.class);
@@ -33,9 +35,11 @@ public class UploadPostProcessStrategy implements UploadPostProcessing {
     private P3PostProcessing p3PostProcessing;
     @Inject
     private ThumbnailPostProcessing thumbnailPostProcessing;
+    @Inject
+    private CropPostProcessStrategy imageCropPostProcessStrategy;
 
     @Override
-    public void uploadPostProcessing(String physicalFullPath, AttachUploadParam attachUpload, FileConfig fileConfig) {
+    public void uploadPostProcessing(String physicalFullPath, AttachUploadParam attachUpload, FileConfig fileConfig) throws IOException {
         UploadDealType uploadDealType = fileConfig.getType();
         logger.info("uploading post processing dealType {}", fileConfig.getType());
         switch (uploadDealType) {
@@ -48,6 +52,8 @@ public class UploadPostProcessStrategy implements UploadPostProcessing {
             case BREAK_UP:
                 this.breakUpPostProcessing.uploadPostProcessing(physicalFullPath, attachUpload, fileConfig);
                 break;
+            case CROP:
+                this.imageCropPostProcessStrategy.uploadPostProcessing(physicalFullPath, attachUpload, fileConfig);
         }
     }
 }

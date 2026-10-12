@@ -24,11 +24,9 @@ import com.sparrow.file.dao.AttachDAO;
 import com.sparrow.file.dto.AttachDTO;
 import com.sparrow.file.param.AttachUploadParam;
 import com.sparrow.file.param.EnableAttachParam;
-import com.sparrow.file.param.ImageCropperParam;
 import com.sparrow.file.po.Attach;
 import com.sparrow.file.support.constant.FileConstant;
 import com.sparrow.file.support.utils.ImageUtility;
-import com.sparrow.file.support.utils.path.url.PathUrlConverter;
 import com.sparrow.io.file.FileNameProperty;
 import com.sparrow.protocol.BusinessException;
 import com.sparrow.protocol.constant.Extension;
@@ -41,9 +39,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 
 @Named("attachService")
 @Slf4j
@@ -54,10 +50,6 @@ public class AttachServiceImpl implements AttachService {
 
     @Inject
     private AttachAssemble attachAssemble;
-
-    @Inject
-    private PathUrlConverter pathUrlConverter;
-
     @Inject
     private AttachDAO attachDao;
     private FileUtility fileUtility = FileUtility.getInstance();
@@ -109,7 +101,7 @@ public class AttachServiceImpl implements AttachService {
     }
 
     @Override
-    public AttachDTO getAttach(Long fileId) throws BusinessException {
+    public AttachDTO getAttach(Long fileId) {
         Attach attach = this.attachDao.getEntity(fileId);
         return this.attachAssemble.po2dto(attach);
     }
@@ -200,21 +192,5 @@ public class AttachServiceImpl implements AttachService {
     @Override
     public void enableAttach(EnableAttachParam enableAttachParam) throws BusinessException {
 
-    }
-
-    @Override
-    public String imageCropper(ImageCropperParam imageCropperParam) throws IOException {
-        Rectangle rectangle = new Rectangle(imageCropperParam.getX(), imageCropperParam.getY(),
-                imageCropperParam.getWidth(), imageCropperParam.getHeight());
-
-        String physicalFilePath = this.pathUrlConverter.getPhysicalFileByWebUrl(imageCropperParam.getImageUrl());
-        String smallPhysicalFilePath = physicalFilePath.replace(FileConstant.SIZE.BIG, FileConstant.SIZE.SMALL);
-        FileNameProperty fileNameProperty = FileUtility.getInstance().getFileNameProperty(smallPhysicalFilePath);
-        File directory = new File(fileNameProperty.getDirectory());
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        ImageUtility.saveSubImage(physicalFilePath, rectangle, smallPhysicalFilePath);
-        return this.pathUrlConverter.getWebUrlByPhysicalFileName(smallPhysicalFilePath);
     }
 }

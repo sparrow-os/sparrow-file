@@ -19,6 +19,8 @@ package com.sparrow.file.post.processing;
 import com.sparrow.file.bo.FileConfig;
 import com.sparrow.file.param.AttachUploadParam;
 
+import java.io.IOException;
+
 public interface UploadPostProcessing {
-    void uploadPostProcessing(String physicalFullPath, AttachUploadParam attachUploadBo, FileConfig fileConfig);
+    void uploadPostProcessing(String physicalFullPath, AttachUploadParam attachUploadBo, FileConfig fileConfig) throws IOException;
 }

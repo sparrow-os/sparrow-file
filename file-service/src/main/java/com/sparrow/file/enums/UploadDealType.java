@@ -27,5 +27,9 @@ public enum UploadDealType {
     /**
      * 原图保存
      */
-    ORIGIN
+    ORIGIN,
+    /**
+     * 图片剪切
+     */
+    CROP
 }

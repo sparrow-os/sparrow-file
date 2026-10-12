@@ -27,10 +27,6 @@ import lombok.NoArgsConstructor;
 public class ImageCropperParam implements Param {
 
     /**
-     * 原图路径
-     */
-    private String imageUrl;
-    /**
      * x the specified X coordinate
      */
     private Integer x;
@@ -51,7 +47,6 @@ public class ImageCropperParam implements Param {
     @Override
     public String toString() {
         return "ImageCropperParam{" +
-                ", imageUrl='" + imageUrl + '\'' +
                 ", x=" + x +
                 ", y=" + y +
                 ", width=" + width +
